@@ -39,4 +39,4 @@ feature is done on a branch and later merged with the master branch.
 
 ### Who do I talk to? ###
 
-* All enquiries should be directed to  via email<mailto:lobe1602@student.miun.se>
+* All enquiries should be directed to  via email <lobe1602@student.miun.se>

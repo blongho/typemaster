@@ -36,13 +36,13 @@ Last Modified   : 2017-12-26
                 </label>
                 <p>Language
                     <label for="swedish">
-                        <input type="radio" name="interface" id="swedish">
+                        <input type="radio" name="interface"
+                               value="swedish" id="swedish">
                         Swedish
                     </label>
                     <label for="english">
-                        <input type="radio" name="interface" id="english"
-                               checked>
-                        English
+                        <input type="radio" name="interface" value="english"
+                               id="english" checked>English
                     </label>
                 </p>
                 <label for="text" id="textChoice"> Choose text
@@ -101,15 +101,15 @@ Last Modified   : 2017-12-26
                 <table id="statsTable">
                     <tr>
                         <td>Gross WPM:</td>
-                        <td><span id="grossWPM">0</span></td>
+                        <td><span id="grossWPM" class="result">0</span></td>
                         <td>Accuracy:</td>
-                        <td><span id="accuracy">100%</span></td>
+                        <td><span id="accuracy" class="result">100%</span></td>
                     </tr>
                     <tr>
                         <td>Net WPM:</td>
-                        <td><span id="netWPM">0</span></td>
+                        <td><span id="netWPM" class="result">35</span></td>
                         <td>Errors:</td>
-                        <td><span id="errors">0</span></td>
+                        <td><span id="errors" class="result">0</span></td>
                     </tr>
                 </table>
             </section>

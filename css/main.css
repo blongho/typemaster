@@ -2,7 +2,7 @@
 File Name		: main.css
 Author			: Bernard Che Longho (lobe1602) <lobe1602@student.miun.se>
 Creation date	: 2017-12-26
-Last Modified	: 2017-12-26
+Last Modified	: 2017-12-27
 */
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
@@ -34,11 +34,6 @@ time, mark, audio, video{
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section{
   display : block;
-  }
-
-body{
-  line-height : 1;
-  margin      : 2% auto;
   }
 
 ol, ul{ list-style : none; }
@@ -73,20 +68,20 @@ END OF RESET
   }
 
 html{
-  margin     : auto;
-  width      : 600px;
-  background : #eaeaea;
+  margin     : 10px auto;
+  max-width  : 620px;
+  background : #fafad2;
   }
 
 body{
   position      : relative;
-  background    : #ffffff url("../img/dark3.png") repeat;
+  background    : #262626 url("../img/dark3.png") repeat;
   opacity       : 0.8;
   border        : 2px inset #fafad2;
   box-shadow    : -5px 5px 25px black;
   border-radius : 5px;
   width         : 600px;
-  margin        : 0 auto;
+  margin        : 10px auto;
   color         : white;
   font          : normal 10pt/1em arial, Helvetica, sans-serif;
   }
@@ -95,15 +90,13 @@ body{
 	Style logo
  */
 #pageHeader{
-  display : flex;
-  border  : thin inset #fafad2;
+  /*border : thin inset #fafad2;*/
   }
 
 #logo{
+  float            : left;
   max-width        : 100%;
-  height           : 30px;
-  margin           : 5px;
-  background-color : transparent;
+  width            : 60px;
   }
 
 /*
@@ -128,34 +121,18 @@ body{
   }
 
 #title{
-  margin    : 5px;
+  float     : left;
+  margin    : 5px 5px  5px 65px;
   padding   : 5px;
   font      : bold 12pt 'Source Code Pro', sans-serif;
   animation : spinTitle 20s infinite;
   }
 
-/**
- Hide all unnecessary stuff
- */
-.hide{ display : none; }
-
-/*
-  Let there be some space between the various sections
- */
-section, footer, header{
-  margin  : 10px 5px;
-  padding : 5px;
-  }
-
 /* Style the settings area */
 #settings{
-  height : 50px;
-  border : 2px solid blue;
-  }
-
-#settings > *{
-  padding-top : 2px;
-  margin-left : 5px;
+  margin-top : 60px;
+ /* border     : 2px solid blue;*/
+  clear      : both;  /* clear floats from above */
   }
 
 #textChoice{
@@ -174,6 +151,20 @@ section, footer, header{
   clear            : both; /* clears any eventual floats above */
   }
 
+/**
+ Hide all unnecessary stuff
+ */
+.hide{ display : none; }
+
+/*
+  Let there be some space between the various sections
+ */
+section, footer, header{
+  margin  : 10px 5px;
+  padding : 5px;
+  height  : auto;
+  }
+
 /* Let the test, the user input, statistics and footer section be centered align */
 #test, #user, #statistics, #footer{
   display        : flex;
@@ -183,14 +174,12 @@ section, footer, header{
 
 /* Style the test section */
 #test{
-  height : auto;
-  border : 2px solid red;
+  border : 3px outset sandybrown;
   }
 
 /* Style the user section */
 #user{
-  height : 80px;
-  border : 2px solid green;
+  border : 2px outset green;
   }
 
 #userText{
@@ -206,15 +195,17 @@ section, footer, header{
 
 #testContent{
   font : normal 140% "Courier New", sans-serif;
-  /* background-color : #fafad2;*/
+  text-align : left;
   }
+#testTitle, #authorAndStatistics{ text-align : center;}
 
 #testTitle{
-  font : bold 160%/2em "Caviar Dreams", sans-serif;
+  font : bold italic 160%/2em "Caviar Dreams", sans-serif;
   }
 
 #authorAndStatistics{
-  font : bold italic 120%/2em "Times New Romans", serif;
+  font  : bold italic 120%/2em "Comic Sans MS", cursive, sans-serif;
+  color : greenyellow;
   }
 
 #action_image{
@@ -232,9 +223,11 @@ section, footer, header{
   text-align     : right;
   vertical-align : middle;
   }
+
 .result{
-  color: tomato;
+  color : tomato;
   }
+
 /* Styles for the border section */
 #footer{
   border-top : 2px solid lightsteelblue;
@@ -243,3 +236,27 @@ section, footer, header{
 
 #footer p{ padding-top : 10px; }
 
+/*.char:first-child{
+  background-color: grey;
+  }*/
+
+
+/*
+  Some media queries for devices with width < 600px
+ */
+@media screen and (max-width : 599px){
+  html{ width : 100%; }
+
+  body{ width : 90%; }
+
+  #settings{
+	display        : flex;
+	flex-direction : column;
+	}
+
+  #textChoice, #text{
+	display    : flex;
+	margin-top : 5px;
+	}
+
+  }

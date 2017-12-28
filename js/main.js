@@ -29,6 +29,7 @@ var Test = {
 var engTexts = []; // Array to store english texts
 var sweTexts = []; // Array to store swedish texts
 
+var spanChars; // a list of all the test characters
 /**
  * Read xml file
  * texts.xml is parsed and every Test object is read.
@@ -73,9 +74,9 @@ function loadTexts() {
 			sweTexts.push(test);
 		}
 	}
-	console.log(engTexts);
-	console.log(sweTexts);
-	console.log(sweTexts[3].title + "\n" + sweTexts[3].summary());
+	//console.log(engTexts);
+	//console.log(sweTexts);
+	//console.log(sweTexts[3].title + "\n" + sweTexts[3].summary());
 }
 
 function getTestText(title) {
@@ -99,30 +100,40 @@ function getSelectedLanguage() {
  * user's language of preference
  */
 function addOptions() {
-	var lang = getSelectedLanguage();
-	var arr = lang === "english" ? engTexts : sweTexts; // choose which array
+	// choose which  array
+	var arr = getSelectedLanguage() === "english" ? engTexts : sweTexts;
 
 	var textOptions = document.getElementById("text");
-	for (var i = 0; i < arr.length; i++) {
-		var title = arr[i].title;
-		var option = document.createElement("option");
-		option.value = title;
-		option.text = title;
-		textOptions.add(option);
+
+	if (textOptions.children.length === 0) {
+		for (var i = 0; i < arr.length; i++) {
+			var option = document.createElement("option");
+			var title = arr[i].title;
+			option.value = title;
+			option.text = title;
+			textOptions.add(option);
+		}
 	}
-
 	var choice = textOptions.options[textOptions.selectedIndex].value;
-
 	addTestText(arr, choice);
 }
 
-function optionsExists(optionList, option) {
-	for (var i = 0; i = optionList.length; i++) {
-		if (optionList.options[optionList.selectedIndex].value === option) {
-			return true
-		}
+function appInterface() {
+	var lang = getSelectedLanguage();
+	if (lang === "swedish") {
+		document.getElementById("caseLabel").innerHTML = "Ignorera" +
+			" versaler / gemener";
+		document.getElementById("swe").innerHTML = "Svenska";
+		document.getElementById("eng").innerHTML = "Engelska";
+		document.getElementById("langLabel").innerHTML = "Språk";
+		document.getElementById("choice").innerHTML = "Textväljare";
+		document.getElementById("userText").placeholder = "Skriv här..";
+		document.getElementById("title").innerHTML = "Mäta din" +
+			" skrivhastighet och träffsäkerhet";
+		document.getElementById("head_title").innerHTML = "Mäta din" +
+			" skrivhästighet";
+
 	}
-	return false;
 }
 
 /**
@@ -131,45 +142,68 @@ function optionsExists(optionList, option) {
  * @param option The option selected
  */
 function addTestText(arr, option) {
-	var text = Object.create(Test);
+
 	for (var i = 0; i < arr.length; i++) {
 		if (option === arr[i].title) {
+			var text = Object.create(Test);
 			text = arr[i];
 		}
 	}
-
-	// load text and details
 	document.getElementById("testTitle").innerHTML = text.title;
-	document.getElementById("authorAndStatistics").innerHTML = text.summary();
-	document.getElementById("testContent").innerHTML = text.text;
+	document.getElementById("authorAndStatistics").innerHTML =
+		text.summary();
+	document.getElementById("testContent").innerHTML = spanText(text.text);
 
+	// get the list of all the characters
+	spanChars = document.getElementsByClassName("char");
 }
 
+/**
+ * Add appropriate text content in the test area based on user choice
+ */
 function changeTest() {
-//	if(document.getElementById("text").hasChildNodes()){
-//		var del = document.getElementById("text").children;
-//		for(var i = 0; i < del.length; i++){
-//			document.getElementById("text").removeChild(del[i]);
-//		}
-//	}
-	//document.getElementById("text").options.length = 0;
-
 	document.getElementById("text")
 		.addEventListener("change", addOptions, false);
-
+	document.getElementById("text")
+		.addEventListener("change", highlightFirstChar, false);
+	document.getElementById("userText")
+		.addEventListener("input", highlightNextChar, false);
 }
 
+/**
+ * Enclose every character of a string into a span
+ * @param text Text whose characters will be spanned
+ * @returns {string} The "spanned" string
+ */
 function spanText(text) {
-	var newText = "";
-	for (var i = 0; i < text.length; i++) {
-		var span = document.createElement("span");
-		span.class = "char";
-		span.text = text[i];
-		newText += span;
-	}
-	return newText;
+	return "<span class='char'>" +
+		text.split("").join("<\/span><span class='char'>") + "<\/span>";
 }
 
+/**
+ * Highlight the first character of the test text
+ * This function is expected to be called at the beginning and everything the
+ * user changes text content
+ */
+function highlightFirstChar() {
+	spanChars[0].style.backgroundColor = "grey";
+}
+
+/**
+ * Highlight the next character as the user types in
+ */
+function highlightNextChar() {
+	for (var i = 0; i < spanChars.length; i++) {
+		if (document.getElementById("userText").value ===
+			spanChars[i].innerHTML) {
+			console.log("Yes " + spanChars[i].innerHTML + "\n")
+		}
+	}
+}
+
+/**
+ * Give different colors to the user statistics based on their performance
+ */
 function colorResults() {
 	var results = document.getElementsByClassName("result");
 	for (var i = 0; i < results.length; i++) {
@@ -184,11 +218,13 @@ function colorResults() {
 }
 
 function init() {
-
 	fillDate();
 	loadTexts();
 	addOptions();
 	colorResults();
+	appInterface();
+	highlightFirstChar();
+	highlightNextChar();
 }
 
 /**

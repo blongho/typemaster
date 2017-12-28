@@ -2,50 +2,47 @@
 File Name       : index.html
 Author          : Bernard Che Longho (lobe1602) <lobe1602@student.miun.se>
 Creation date   : 2017-12-24
-Last Modified   : 2017-12-26
+Last Modified   : 2017-12-27
 -->
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <meta name="author" content="Bernard Che Longho">
         <meta name="description"
               content="A web application for the measurement of typing speed in
               words per minute and the typing accuracy of the user">
-        <title>Words per minute test</title>
+        <title id="head_title">Measure your typing speed and accuracy</title>
         <link rel="stylesheet" href="css/main.css" type="text/css">
         <script src="js/main.js"></script>
     </head>
     <body>
         <header id="pageHeader">
             <img src="img/wpm-laptop.jpg" alt="wpm-laptop" id="logo">
-            <h1 id="title">Test your typing skill here (speed and accuracy)</h1>
-        </header>
-        <main id="main_content">
+            <h1 id="title">Measure your typing speed and accuracy</h1>
             <!-- The user sets the interface and chooses how s(he) will be
-            evaluated [uppercase or not in the accuracy calculations] -->
-
+           evaluated [uppercase or not in the accuracy calculations] -->
             <section id="settings" class="ui">
                 <h2 class="hide">The settings section</h2>
                 <label for="case">
                     <input type="checkbox" name="case" id="case">
-                    Ignore case
+                    <span id="caseLabel">Ignore case</span>
                 </label>
-                <p>Language
+                <p id="lang"><span id="langLabel">Language</span>
                     <label for="swedish">
                         <input type="radio" name="interface"
-                               value="swedish" id="swedish">
-                        Swedish
+                               value="swedish" id="swedish" checked>
+                        <span id="swe">Swedish</span>
                     </label>
                     <label for="english">
                         <input type="radio" name="interface" value="english"
-                               id="english" checked>English
+                               id="english"><span id="eng">English</span>
                     </label>
                 </p>
-                <label for="text" id="textChoice"> Choose text
+                <label for="text" id="textChoice">
+                    <span id="choice">Choose text</span>
                     <select name="text" id="text">
                         <!--
                         fill this with js based on the [interface]
@@ -55,7 +52,8 @@ Last Modified   : 2017-12-26
                     </select>
                 </label>
             </section>
-
+        </header>
+        <main id="main_content">
             <!--
             User-independent area.
             Based on user choice [textLanguage], this area is populated with
@@ -100,15 +98,15 @@ Last Modified   : 2017-12-26
                 <h2 class="hide">The statistics section</h2>
                 <table id="statsTable">
                     <tr>
-                        <td>Gross WPM:</td>
+                        <td id="gwpm">Gross WPM:</td>
                         <td><span id="grossWPM" class="result">0</span></td>
-                        <td>Accuracy:</td>
+                        <td id="acc">Accuracy:</td>
                         <td><span id="accuracy" class="result">100%</span></td>
                     </tr>
                     <tr>
-                        <td>Net WPM:</td>
+                        <td id="nwpm">Net WPM:</td>
                         <td><span id="netWPM" class="result">35</span></td>
-                        <td>Errors:</td>
+                        <td id="err">Errors:</td>
                         <td><span id="errors" class="result">0</span></td>
                     </tr>
                 </table>

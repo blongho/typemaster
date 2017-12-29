@@ -94,9 +94,9 @@ body{
   }
 
 #logo{
-  float            : left;
-  max-width        : 100%;
-  width            : 60px;
+  float     : left;
+  max-width : 100%;
+  width     : 60px;
   }
 
 /*
@@ -122,7 +122,7 @@ body{
 
 #title{
   float     : left;
-  margin    : 5px 5px  5px 65px;
+  margin    : 5px 5px 5px 65px;
   padding   : 5px;
   font      : bold 12pt 'Source Code Pro', sans-serif;
   animation : spinTitle 20s infinite;
@@ -131,8 +131,8 @@ body{
 /* Style the settings area */
 #settings{
   margin-top : 60px;
- /* border     : 2px solid blue;*/
-  clear      : both;  /* clear floats from above */
+  /* border     : 2px solid blue;*/
+  clear      : both; /* clear floats from above */
   }
 
 #textChoice{
@@ -194,10 +194,12 @@ section, footer, header{
   }
 
 #testContent{
-  font : normal 140% "Courier New", sans-serif;
+  font       : normal 140%/2em Verdana, Geneva, sans-serif;
+  letter-spacing: 0.1em;
   text-align : left;
   }
-#testTitle, #authorAndStatistics{ text-align : center;}
+
+#testTitle, #authorAndStatistics{ text-align : center; }
 
 #testTitle{
   font : bold italic 160%/2em "Caviar Dreams", sans-serif;
@@ -240,23 +242,28 @@ section, footer, header{
   background-color: grey;
   }*/
 
-
 /*
   Some media queries for devices with width < 600px
  */
-@media screen and (max-width : 599px){
-  html{ width : 100%; }
+@media only screen and (max-width : 599px){
 
-  body{ width : 90%; }
+  html{width: 98%;}
+  body{ max-width : 96% }
 
-  #settings{
-	display        : flex;
-	flex-direction : column;
+  #pageHeader, #test, #user, #statistics, #footer, #settings{
+	display       : flex;
+	flex          : 1 auto;
+	margin        : 15px auto;
+	flex-flow     : column wrap;
+	align-content : center;
+	align-items   : center;
+	width         : 90%;
 	}
 
-  #textChoice, #text{
-	display    : flex;
-	margin-top : 5px;
-	}
+  *{font-size: smaller;}
+  #caseL, #lang, #textChoice{ margin-bottom : 10px; }
 
+  #textChoice{ margin-top : 10px; }
+
+  #text{ position : absolute; }
   }

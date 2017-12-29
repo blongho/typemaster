@@ -1,22 +1,23 @@
 <!---
 File Name       : index.html
-Author          : Bernard Che Longho (lobe1602) <lobe1602@student.miun.se>
+Author          : Bernard Che Longho (lobe1602) <lobe1602[at]student.miun.se>
 Creation date   : 2017-12-24
-Last Modified   : 2017-12-27
+Last Modified   : 2017-12-29
 -->
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <meta name="author" content="Bernard Che Longho">
         <meta name="description"
               content="A web application for the measurement of typing speed in
               words per minute and the typing accuracy of the user">
-        <title id="head_title">Measure your typing speed and accuracy</title>
+        <title id="headTitle">Measure your typing speed and accuracy</title>
         <link rel="stylesheet" href="css/main.css" type="text/css">
         <script src="js/main.js"></script>
+        <script src="js/testStuff.js"></script>
     </head>
     <body>
         <header id="pageHeader">
@@ -26,31 +27,35 @@ Last Modified   : 2017-12-27
            evaluated [uppercase or not in the accuracy calculations] -->
             <section id="settings" class="ui">
                 <h2 class="hide">The settings section</h2>
-                <label for="case">
-                    <input type="checkbox" name="case" id="case">
-                    <span id="caseLabel">Ignore case</span>
-                </label>
-                <p id="lang"><span id="langLabel">Language</span>
-                    <label for="swedish">
-                        <input type="radio" name="interface"
-                               value="swedish" id="swedish" checked>
-                        <span id="swe">Swedish</span>
+                <form action="#" id="settingsForm" name="settingsForm">
+                    <label for="case" id="caseL">
+                        <input type="checkbox" name="case" id="case">
+                        <span id="caseLabel">Ignore case</span>
                     </label>
-                    <label for="english">
-                        <input type="radio" name="interface" value="english"
-                               id="english"><span id="eng">English</span>
+                    <p id="lang"><span id="langLabel">Language</span>
+                        <label for="swedish">
+                            <input type="radio" name="interface"
+                                   value="swedish" id="swedish">
+                            <span id="swe">Swedish</span>
+                        </label>
+                        <label for="english">
+                            <input type="radio" name="interface" value="english"
+                                   id="english" checked="checked"><span
+                            id="eng">English
+                        </span>
+                        </label>
+                    </p>
+                    <label for="text" id="textChoice">
+                        <span id="choice">Text choice</span>
+                        <select name="text" id="text">
+                            <!--
+                            fill this with js based on the [interface]
+                            Default interface: English so at program load, fill this
+                            with English choices
+                             -->
+                        </select>
                     </label>
-                </p>
-                <label for="text" id="textChoice">
-                    <span id="choice">Choose text</span>
-                    <select name="text" id="text">
-                        <!--
-                        fill this with js based on the [interface]
-                        Default interface: English so at program load, fill this
-                        with English choices
-                         -->
-                    </select>
-                </label>
+                </form>
             </section>
         </header>
         <main id="main_content">
@@ -85,7 +90,7 @@ Last Modified   : 2017-12-27
                  -->
                 <button id="action_button">
 
-                    <img src="img/play.png" alt="play.png"
+                    <img src="img/play.png" alt="play button"
                          id="action_image">
                 </button>
             </section>
@@ -101,7 +106,7 @@ Last Modified   : 2017-12-27
                         <td id="gwpm">Gross WPM:</td>
                         <td><span id="grossWPM" class="result">0</span></td>
                         <td id="acc">Accuracy:</td>
-                        <td><span id="accuracy" class="result">100%</span></td>
+                        <td><span id="accuracy" class="result">100</span>%</td>
                     </tr>
                     <tr>
                         <td id="nwpm">Net WPM:</td>

@@ -2,6 +2,7 @@
  * @file main.js
  * @author Bernard Che Longho (lobe1602) lobe1602@student.miun.se
  * @desc Javascript functions for typing game
+ * @since 2017-12-29
  */
 
 /**
@@ -26,10 +27,12 @@ var Test = {
 			" chars)");
 	}
 };
-var engTexts = []; // Array to store english texts
-var sweTexts = []; // Array to store swedish texts
+
+var textArray = [];// Array of text objects
 
 var spanChars; // a list of all the test characters
+
+var currentTestText = ""; // get the current text in the test area.
 /**
  * Read xml file
  * texts.xml is parsed and every Test object is read.
@@ -57,7 +60,7 @@ function loadTexts() {
 	var texts = object.getElementsByTagName("text");
 	var langList = object.getElementsByTagName("language");
 
-	var len = titleList.length;
+	var len = texts.length;
 
 	for (var i = 0; i < len; i++) {
 
@@ -67,20 +70,10 @@ function loadTexts() {
 		test.author = authorList[i].firstChild.data;
 		test.lang = langList[i].firstChild.data;
 		test.text = texts[i].firstChild.data;
-
-		if (test.lang === "english") {
-			engTexts.push(test);
-		} else {
-			sweTexts.push(test);
-		}
+		textArray.push(test);
 	}
-	//console.log(engTexts);
-	//console.log(sweTexts);
-	//console.log(sweTexts[3].title + "\n" + sweTexts[3].summary());
-}
 
-function getTestText(title) {
-	var textLanguage = document.interface.value;
+	//console.log(textArray);
 }
 
 /**
@@ -88,86 +81,134 @@ function getTestText(title) {
  * @returns {string|Number} The language of the text to display
  */
 function getSelectedLanguage() {
-	//var lang =
-	// document.querySelector('input[name="interface"]:checked').value;
-	return document.querySelector('input[name="interface"]:checked').value;
-	//console.log(lang);
+	return document.settingsForm.interface.value;
+	//return document.querySelector('input[name="interface"]:checked').value;
 }
 
 /**
- * This function populates the test options as well as the test sample.
- * It does a "smart" switch of options and populates the tests as per the
- * user's language of preference
+ * This function populates the test options as well as the test sample.<br>
+ * If there are options in the options list, they are first cleared  and <br>
+ * The options list is populated with texts based on the user language
  */
 function addOptions() {
-	// choose which  array
-	var arr = getSelectedLanguage() === "english" ? engTexts : sweTexts;
-
 	var textOptions = document.getElementById("text");
 
-	if (textOptions.children.length === 0) {
-		for (var i = 0; i < arr.length; i++) {
+	// clear all options if there are any
+	if (textOptions.length !== 0) textOptions.length = 0;
+
+	var language = getSelectedLanguage();
+
+	if (textOptions.length === 0) {
+		for (var i = 0; i < textArray.length; i++) {
 			var option = document.createElement("option");
-			var title = arr[i].title;
-			option.value = title;
-			option.text = title;
-			textOptions.add(option);
+			if (textArray[i].lang === language) {
+				var title = textArray[i].title;
+				option.value = title;
+				option.text = title;
+				textOptions.add(option);
+			}
 		}
 	}
 	var choice = textOptions.options[textOptions.selectedIndex].value;
-	addTestText(arr, choice);
+	addTestText(choice)
 }
 
-function appInterface() {
-	var lang = getSelectedLanguage();
-	if (lang === "swedish") {
-		document.getElementById("caseLabel").innerHTML = "Ignorera" +
-			" versaler / gemener";
-		document.getElementById("swe").innerHTML = "Svenska";
-		document.getElementById("eng").innerHTML = "Engelska";
-		document.getElementById("langLabel").innerHTML = "Språk";
-		document.getElementById("choice").innerHTML = "Textväljare";
-		document.getElementById("userText").placeholder = "Skriv här..";
-		document.getElementById("title").innerHTML = "Mäta din" +
-			" skrivhastighet och träffsäkerhet";
-		document.getElementById("head_title").innerHTML = "Mäta din" +
-			" skrivhästighet";
+/**
+ * Translate the interface to swedish if the language chosen is swedish
+ */
+function translateInterface() {
+	var ignore = document.getElementById("caseLabel");
+	var swe = document.getElementById("swe");
+	var eng = document.getElementById("eng");
+	var langLabel = document.getElementById("langLabel");
+	var userText = document.getElementById("userText");
+	var textChoice = document.getElementById("choice");
+	var title = document.getElementById("title");
+	var headTitle = document.getElementById("headTitle");
 
+	switch (getSelectedLanguage().toLowerCase()) {
+		case "swedish":
+			ignore.innerHTML = "Ignorera versaler / gemener";
+			swe.innerHTML = "Svenska";
+			eng.innerHTML = "Engelska";
+			langLabel.innerHTML = "Språk";
+			textChoice.innerHTML = "Textväljare";
+			userText.placeholder = "Skriv här..";
+			title.innerHTML = "Mäta din skrivhastighet och träffsäkerhet";
+			headTitle.innerHTML = "Mäta din skrivhästighet";
+			break;
+		case "english":
+			ignore.innerHTML = "Ignore case";
+			swe.innerHTML = "Swedish";
+			eng.innerHTML = "English";
+			langLabel.innerHTML = "Language";
+			userText.placeholder = "Type here..";
+			textChoice.innerHTML = "Text choice";
+			title.innerHTML = "Measure your typing speed and accuracy";
+			headTitle.innerHTML = "Measure your typing speed and accuracy";
+			break;
 	}
 }
 
 /**
  * This function fills the "test" area with the text title, author and summary
- * @param arr   The array for which the text is to be extracted.
  * @param option The option selected
  */
-function addTestText(arr, option) {
+function addTestText(option) {
 
-	for (var i = 0; i < arr.length; i++) {
-		if (option === arr[i].title) {
-			var text = Object.create(Test);
-			text = arr[i];
+	for (var i = 0; i < textArray.length; i++) {
+		if (option === textArray[i].title) {
+			var test = Object.create(Test);
+			test = textArray[i];
 		}
 	}
-	document.getElementById("testTitle").innerHTML = text.title;
+	document.getElementById("testTitle").innerHTML = test.title;
 	document.getElementById("authorAndStatistics").innerHTML =
-		text.summary();
-	document.getElementById("testContent").innerHTML = spanText(text.text);
+		test.summary();
+	document.getElementById("testContent").innerHTML = spanText(test.text);
+	//document.getElementById("testContent").innerHTML = test.text;
 
-	// get the list of all the characters
+	console.log(spanText(test.text).length);
+	currentTestText = test.text;
+
+	// get the list of all the characters and highlight first character
 	spanChars = document.getElementsByClassName("char");
+	spanChars[0].style.backgroundColor = "grey";
+
+	//console.clear();
+	//console.log("Test text..\n " + currentTestText + "\nWords : " +
+	//	currentTestText.split(" ").length);
+
 }
 
 /**
  * Add appropriate text content in the test area based on user choice
+ * When a user changes a text option, the appropriate texts is loaded
  */
 function changeTest() {
-	document.getElementById("text")
-		.addEventListener("change", addOptions, false);
-	document.getElementById("text")
-		.addEventListener("change", highlightFirstChar, false);
-	document.getElementById("userText")
-		.addEventListener("input", highlightNextChar, false);
+	document.getElementById("text").addEventListener(
+		"change", function () {
+			var textOptions = document.getElementById("text");
+			var choice = textOptions.options[textOptions.selectedIndex].value;
+			addTestText(choice);
+		}, false);
+}
+
+/**
+ * When a language button is clicked,
+ * <ul>
+ *     <li>Interface is translated to the selected language</li>
+ *     <li>Options are loaded with sample test for the first options </li>
+ * </ul>
+ *
+ */
+function languageChangeEvents() {
+	var langOptions = document.settingsForm.interface;
+
+	for (var i = 0; i < langOptions.length; i++) {
+		langOptions[i].addEventListener("click", translateInterface, false);
+		langOptions[i].addEventListener("click", addOptions, false);
+	}
 }
 
 /**
@@ -181,53 +222,6 @@ function spanText(text) {
 }
 
 /**
- * Highlight the first character of the test text
- * This function is expected to be called at the beginning and everything the
- * user changes text content
- */
-function highlightFirstChar() {
-	spanChars[0].style.backgroundColor = "grey";
-}
-
-/**
- * Highlight the next character as the user types in
- */
-function highlightNextChar() {
-	for (var i = 0; i < spanChars.length; i++) {
-		if (document.getElementById("userText").value ===
-			spanChars[i].innerHTML) {
-			console.log("Yes " + spanChars[i].innerHTML + "\n")
-		}
-	}
-}
-
-/**
- * Give different colors to the user statistics based on their performance
- */
-function colorResults() {
-	var results = document.getElementsByClassName("result");
-	for (var i = 0; i < results.length; i++) {
-		if (results[i].innerHTML < 30) {
-			results[i].style.color = "red";
-		} else if (results[i].innerHTML > 30 && results[i].innerHTML < 50) {
-			results[i].style.color = "lightgreen";
-		} else {
-			results[i].style.color = "green";
-		}
-	}
-}
-
-function init() {
-	fillDate();
-	loadTexts();
-	addOptions();
-	colorResults();
-	appInterface();
-	highlightFirstChar();
-	highlightNextChar();
-}
-
-/**
  * Dynamically set the date value in the footer section
  */
 function fillDate() {
@@ -235,5 +229,16 @@ function fillDate() {
 		new Date().getFullYear().toString();
 }
 
+/**
+ * All events and stored here to be loaded at program start
+ */
+function init() {
+	fillDate();
+	loadTexts();
+	addOptions();
+	changeTest();
+	languageChangeEvents();
+	translateInterface();
+}
+
 window.addEventListener("load", init, false);
-window.addEventListener("load", changeTest, false);

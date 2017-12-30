@@ -4,62 +4,156 @@
  * @desc File with js functions that handle the typing tracking and results
  * display
  */
-
-var errors;     // number of errors
-var correct;    // number of correctly typed words
-var grossWPM;   // gross WPM (correct/5) /elapsed time
-var netwpm;     // net WPM in percentage ( grossWPM - (errors/min))
-var accuracy;   // the accuracy of the typing
+var seconds = 0;
 var startTime = 0;  // start time
 var stopTime;   // end time of game
 var maxTime;    // maximum time for the game (2 minutes)
+var typedIndex = 0; // index of currently typed text
+var trackingIndex = 1; // index of test text
 
-var actionButtons = [];  // array that holds play/stop action buttons
+var typedEntries = 0;
 
-/**
- * Load action buttons for easy surfing later on
- */
-function loadActionButtons() {
-	var play = new Image();
-	play.src = "img/play.png";
-	play.alt = "play button";
+function displayTime() {
+	if (tick) {
+		++seconds;
+	}
 
-	var stop = new Image();
-	stop.src = "img/stop.png";
-	stop.alt = "stop button";
+	var timer = document.getElementById("timer");
+	var sec = document.getElementById("seconds");
+	var p = document.getElementById("time");
+	p.style.border = "1px inset green";
+	p.style.padding = "0.5em";
+	p.style.backgroundColor = "white";
+	p.style.font = "bold 140% Verdana, serif";
+	//timer.style.color = seconds < 30 ? "green" : "red";
+	//timer.innerHTML = seconds < 10 ? "0" + seconds : seconds;
 
-	actionButtons.push(play);
-	actionButtons.push(stop);
+	sec.style.color = "black";
+	sec.innerHTML = " seconds";
+//	if (seconds >= 120) {
+//		tick = false;
+//		document.getElementById("userText").disabled = true;
+//		sec.innerHTML = "";
+//		timer.innerHTML = "TIME LIMIT <<" + seconds + ">> SECONDS REACHED"
+//	}
+
+}
+
+function endGame() {
+	document.getElementById("userText").disabled = true;
+	//pauseGame();
+
 }
 
 /**
- * Change the action image from play to stop and vis-versa when user clicks on
- * the button
+ * Compare two characters. <br/>
+ * Checks if "Ignore case" is checked. <br/>
+ * If checked, a case-insensitive comparison is done otherwise normal comparison
+ * @param c1 Character1 to compare
+ * @param c2 Character2 to compare
+ * @returns {boolean} true if they are the same characters
  */
-function changeActionButton() {
-	document.getElementById("action_image").addEventListener(
-		"click", function () {
-			var action = this.alt.split(" ")[0];
-			switch (action) {
-				case "play":
-					this.src = actionButtons[1].src;
-					this.alt = actionButtons[1].alt;
-					break;
-				case "stop":
-					this.src = actionButtons[0].src;
-					this.alt = actionButtons[0].alt;
-					break;
+function compareChar(c1, c2) {
+	var ignoreChecked = document.settingsForm.case.checked;
+	if (ignoreChecked) {
+		return c1.toLowerCase() === c2.toLowerCase();
+	}
+	return c1 === c2;
+	//console.log("Value of ignoreChecked = " + ignoreChecked);
+
+}
+
+/**
+ * As the user types <br/>
+ * The typed char is compared with that of the test text. Consideration is
+ * taken<br/> whether the user wants to ignore the case or not by calling
+ * the <code>compareCase()</code> function<br/>
+ * If chars are equal, the correct and error counts are updated dynamically
+ * based <br/>whether or not the chars are equal.
+ * Input field is disabled when all text is highlighted.
+ */
+function measurements() {
+
+	var grossWPM = document.getElementById("grossWPM");// gross WPM
+	var errors = document.getElementById("errors"); // number of
+	var netWPM = document.getElementById("netWPM");// net WPM in
+	var accuracy = document.getElementById("accuracy");// the
+
+	var timer = document.getElementById("timer");
+
+	var error = 0;
+	var correct = 0;
+	var len = tractTest.length;
+	const startTime = new Date().getTime();
+
+	document.getElementById("userText").addEventListener("input", function () {
+		var typed = document.getElementById("userText").value;
+
+		var lastChar = typed[typed.length - 1];
+
+		var errorChar = tractTest[typedIndex];
+
+		tractTest[trackingIndex].style.backgroundColor = "grey";
+
+		// clear input fill when whitespace is encountered
+		if (!isChar(lastChar)) {
+			this.value = "";
+		}
+		if (compareChar(lastChar, currentTestText[typedIndex])) {
+			++correct;
+			accuracy.innerHTML = (correct / len * 100).toFixed();
+		} else {
+			if (isChar(errorChar)) {
+				errorChar.style.color = "red";
 			}
-		});
+			errors.innerHTML = ++error;
+			document.getElementById("shout").play();
+		}
+
+		++typedIndex;
+		++trackingIndex;
+		var nt = (new Date().getTime() - startTime) / 1000;
+
+		if (trackingIndex === len) { // end of test text reached
+			timer.innerHTML =nt.toFixed() < 10 ? "0" + nt.toFixed() : nt.toFixed();
+
+			endGame();
+		}
+		console.log("Time passed: " + nt.toFixed());
+		console.log("\nTyped index = " + typedIndex + "\nTracking index =" +
+			trackingIndex);
+	}, false);
+
 }
 
 /**
- * Reset the action button to play
+ * Check that a char is not white space
+ * @param char Character to check
+ * @returns {boolean} -1 if value is not a char. Otherwise, a positive number
  */
-function resetActionButton() {
-	var actionImage = document.getElementById("action_image");
-	actionImage.src = actionButtons[0].src;
-	actionImage.alt = actionButtons[0].alt;
+function isChar(char) {
+	return "\t\n\r ".indexOf(char) < 0;
+}
+
+/**
+ * Start timer: Call this when user starts typing.
+ * The method setInterval calls updateTimer() which increments seconds every
+ * 1000 milliseconds = 1 second
+ */
+function inputEvents() {
+	var userText = document.getElementById("userText");
+
+	/*userText.addEventListener(
+	 "click", function () {
+	 setInterval("displayTime()", 1000);
+	 }, false);*/
+
+	userText.addEventListener("click", function () {
+		this.placeholder = "";
+	}, false);
+
+	userText.addEventListener("click", changeActionButton, false);
+
 }
 
 /**
@@ -79,53 +173,13 @@ function colorResults() {
 	}
 }
 
-function measurements() {
-	var i = 0;
-	errors = 0;
-	var punct = "/[-{}()*+?.,^|# ";
-
-	
-	document.getElementById("userText").addEventListener(
-		"input", function () {
-
-			var typed = document.getElementById("userText").value;
-			var lastChar = typed[typed.length - 1];
-
-			correct = 0;
-			if (lastChar === currentTestText[i]) {
-				console.log(lastChar + "\n");
-
-				++correct;
-			} else if (lastChar !== currentTestText[i]) {
-				if(punct.indexOf(lastChar) > 1)
-					errors++;
-				document.getElementById("errors").innerHTML = errors;
-
-			}
-			console.log("The value of i is: " + i + "\nerrors: " + errors);
-			i++;
-		}, false);
-
-}
-
-/**
- * Reset all game values
- */
-function resetGame() {
-	resetActionButton();
-	document.getElementById("grossWPM").innerHTML = 0;
-	document.getElementById("errors").innerHTML = 0;
-	document.getElementById("netWPM").innerHTML = 0;
-	document.getElementById("errors").innerHTML = 0;
-	document.getElementById("accuracy").innerHTML = 0;
-}
-
 function init() {
 	colorResults();
-	loadActionButtons();
-	resetGame();
-	changeActionButton();
 	measurements();
+	console.log(isChar(" "));
+	console.log(isChar("g"));
 }
 
 window.addEventListener("load", init, false);
+window.addEventListener("load", inputEvents, false);
+//window.addEventListener("load", endGame, false);

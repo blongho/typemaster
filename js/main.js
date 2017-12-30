@@ -28,11 +28,18 @@ var Test = {
 	}
 };
 
+var tick = true;
 var textArray = [];// Array of text objects
 
 var spanChars; // a list of all the test characters
 
 var currentTestText = ""; // get the current text in the test area.
+var tractTest = "";
+var actionButtons = [];  // array that holds play/stop action buttons
+
+var testTitle = document.getElementById("testTitle"); // title of test text
+var textSummary = document.getElementById("authorAndStatistics"); // summary
+
 /**
  * Read xml file
  * texts.xml is parsed and every Test object is read.
@@ -42,37 +49,41 @@ var currentTestText = ""; // get the current text in the test area.
  */
 function loadTexts() {
 	var xhr;
+
 	if (window.XMLHttpRequest) {
+		// code for modern browsers
 		xhr = new XMLHttpRequest();
 	} else {
-		// code for older browsers
+		// code for old IE browsers
 		xhr = new ActiveXObject("Microsoft.XMLHTTP");
 	}
+	xhr.onreadystatechange = function () {
+		if (this.readyState === 4 && this.status === 200) {
+			var xmlDoc = xhr.responseXML;
+
+			var object = xmlDoc.getElementsByTagName("object")[0];
+
+			var titleList = object.getElementsByTagName("title");
+			var authorList = object.getElementsByTagName("author");
+			var texts = object.getElementsByTagName("text");
+			var langList = object.getElementsByTagName("language");
+
+			var len = texts.length;
+
+			for (var i = 0; i < len; i++) {
+
+				var test = Object.create(Test);
+
+				test.title = titleList[i].firstChild.data;
+				test.author = authorList[i].firstChild.data;
+				test.lang = langList[i].firstChild.data;
+				test.text = texts[i].firstChild.data;
+				textArray.push(test);
+			}
+		}
+	};
 	xhr.open("GET", "texts.xml", false);
-	xhr.send();
-
-	var xmlDoc = xhr.responseXML;
-
-	var object = xmlDoc.getElementsByTagName("object")[0];
-
-	var titleList = object.getElementsByTagName("title");
-	var authorList = object.getElementsByTagName("author");
-	var texts = object.getElementsByTagName("text");
-	var langList = object.getElementsByTagName("language");
-
-	var len = texts.length;
-
-	for (var i = 0; i < len; i++) {
-
-		var test = Object.create(Test);
-
-		test.title = titleList[i].firstChild.data;
-		test.author = authorList[i].firstChild.data;
-		test.lang = langList[i].firstChild.data;
-		test.text = texts[i].firstChild.data;
-		textArray.push(test);
-	}
-
+	xhr.send(null);
 	//console.log(textArray);
 }
 
@@ -82,13 +93,14 @@ function loadTexts() {
  */
 function getSelectedLanguage() {
 	return document.settingsForm.interface.value;
-	//return document.querySelector('input[name="interface"]:checked').value;
+	//return
+	// document.querySelector('input[name="interface"]:checked').value;
 }
 
 /**
  * This function populates the test options as well as the test sample.<br>
- * If there are options in the options list, they are first cleared  and <br>
- * The options list is populated with texts based on the user language
+ * If there are options in the options list, they are first cleared  and
+ * <br> The options list is populated with texts based on the user language
  */
 function addOptions() {
 	var textOptions = document.getElementById("text");
@@ -96,17 +108,13 @@ function addOptions() {
 	// clear all options if there are any
 	if (textOptions.length !== 0) textOptions.length = 0;
 
-	var language = getSelectedLanguage();
-
-	if (textOptions.length === 0) {
-		for (var i = 0; i < textArray.length; i++) {
-			var option = document.createElement("option");
-			if (textArray[i].lang === language) {
-				var title = textArray[i].title;
-				option.value = title;
-				option.text = title;
-				textOptions.add(option);
-			}
+	for (var i = 0; i < textArray.length; i++) {
+		var option = document.createElement("option");
+		if (textArray[i].lang === getSelectedLanguage()) {
+			var title = textArray[i].title;
+			option.value = title;
+			option.text = title;
+			textOptions.add(option);
 		}
 	}
 	var choice = textOptions.options[textOptions.selectedIndex].value;
@@ -117,14 +125,17 @@ function addOptions() {
  * Translate the interface to swedish if the language chosen is swedish
  */
 function translateInterface() {
-	var ignore = document.getElementById("caseLabel");
-	var swe = document.getElementById("swe");
-	var eng = document.getElementById("eng");
-	var langLabel = document.getElementById("langLabel");
-	var userText = document.getElementById("userText");
-	var textChoice = document.getElementById("choice");
-	var title = document.getElementById("title");
-	var headTitle = document.getElementById("headTitle");
+	var userText = document.getElementById("userText"); // placeholder for
+                                                        // test
+	var ignore = document.getElementById("caseLabel"); // ignore case label
+	var swe = document.getElementById("swe"); // interface language
+	var eng = document.getElementById("eng"); // interface language
+	var langLabel = document.getElementById("langLabel"); // label for
+                                                          // interface
+	var textChoice = document.getElementById("choice"); // label for text
+                                                        // choice
+	var title = document.getElementById("title"); // app title
+	var headTitle = document.getElementById("headTitle"); // window header
 
 	switch (getSelectedLanguage().toLowerCase()) {
 		case "swedish":
@@ -133,7 +144,7 @@ function translateInterface() {
 			eng.innerHTML = "Engelska";
 			langLabel.innerHTML = "Språk";
 			textChoice.innerHTML = "Textväljare";
-			userText.placeholder = "Skriv här..";
+			userText.placeholder = "Skriv här ...";
 			title.innerHTML = "Mäta din skrivhastighet och träffsäkerhet";
 			headTitle.innerHTML = "Mäta din skrivhästighet";
 			break;
@@ -142,7 +153,7 @@ function translateInterface() {
 			swe.innerHTML = "Swedish";
 			eng.innerHTML = "English";
 			langLabel.innerHTML = "Language";
-			userText.placeholder = "Type here..";
+			userText.placeholder = "Type here ...";
 			textChoice.innerHTML = "Text choice";
 			title.innerHTML = "Measure your typing speed and accuracy";
 			headTitle.innerHTML = "Measure your typing speed and accuracy";
@@ -151,7 +162,8 @@ function translateInterface() {
 }
 
 /**
- * This function fills the "test" area with the text title, author and summary
+ * This function fills the "test" area with the text title, author and
+ * summary
  * @param option The option selected
  */
 function addTestText(option) {
@@ -168,17 +180,33 @@ function addTestText(option) {
 	document.getElementById("testContent").innerHTML = spanText(test.text);
 	//document.getElementById("testContent").innerHTML = test.text;
 
-	console.log(spanText(test.text).length);
 	currentTestText = test.text;
+
 
 	// get the list of all the characters and highlight first character
 	spanChars = document.getElementsByClassName("char");
 	spanChars[0].style.backgroundColor = "grey";
-
+	tractTest = spanChars;
 	//console.clear();
 	//console.log("Test text..\n " + currentTestText + "\nWords : " +
 	//	currentTestText.split(" ").length);
 
+}
+
+/**
+ *Load action buttons for easy surfing later on
+ */
+function loadActionButtons() {
+	var play = new Image();
+	play.src = "img/play.png";
+	play.alt = "play button";
+
+	var stop = new Image();
+	stop.src = "img/stop.png";
+	stop.alt = "stop button";
+
+	actionButtons.push(play);
+	actionButtons.push(stop);
 }
 
 /**
@@ -191,6 +219,7 @@ function changeTest() {
 			var textOptions = document.getElementById("text");
 			var choice = textOptions.options[textOptions.selectedIndex].value;
 			addTestText(choice);
+			resetGame();
 		}, false);
 }
 
@@ -200,7 +229,6 @@ function changeTest() {
  *     <li>Interface is translated to the selected language</li>
  *     <li>Options are loaded with sample test for the first options </li>
  * </ul>
- *
  */
 function languageChangeEvents() {
 	var langOptions = document.settingsForm.interface;
@@ -208,6 +236,8 @@ function languageChangeEvents() {
 	for (var i = 0; i < langOptions.length; i++) {
 		langOptions[i].addEventListener("click", translateInterface, false);
 		langOptions[i].addEventListener("click", addOptions, false);
+		langOptions[i].addEventListener("click", resetActionButton, false);
+		langOptions[i].addEventListener("click", resetGame, false);
 	}
 }
 
@@ -219,6 +249,65 @@ function languageChangeEvents() {
 function spanText(text) {
 	return "<span class='char'>" +
 		text.split("").join("<\/span><span class='char'>") + "<\/span>";
+}
+
+/**
+ * Change the action image from play to stop and vis-versa when user clicks
+ * on the button
+ */
+function changeActionButton() {
+	var action_button = document.getElementById("action_image");
+	var action = action_button.alt.split(" ")[0];
+	switch (action) {
+		case "play":
+			action_button.src = actionButtons[1].src;
+			action_button.alt = actionButtons[1].alt;
+			//continueGame();
+			break;
+		case "stop":
+			action_button.src = actionButtons[0].src;
+			action_button.alt = actionButtons[0].alt;
+			//pauseGame();
+			break;
+	}
+
+}
+
+/**
+ * Reset all results to zero
+ */
+function resetStatistics() {
+	document.getElementById("grossWPM").innerHTML = 0;
+	document.getElementById("errors").innerHTML = 0;
+	document.getElementById("netWPM").innerHTML = 0;
+	document.getElementById("accuracy").innerHTML = 0;
+}
+
+/**
+ * Reset the action button to play
+ */
+function resetActionButton() {
+	var actionImage = document.getElementById("action_image");
+	actionImage.src = actionButtons[0].src;
+	actionImage.alt = actionButtons[0].alt;
+}
+
+function pauseGame() {
+	tick = false;
+	//displayTime();
+}
+
+function continueGame() {
+	tick = true;
+	//displayTime();
+}
+
+/**
+ * Reset all game values
+ */
+function resetGame() {
+	resetActionButton();
+	resetStatistics();
 }
 
 /**
@@ -236,9 +325,14 @@ function init() {
 	fillDate();
 	loadTexts();
 	addOptions();
+	loadActionButtons();
+	//changeActionButton();
+
 	changeTest();
 	languageChangeEvents();
 	translateInterface();
+	document.getElementById("action_image").addEventListener(
+		"click", changeActionButton, true);
 }
 
 window.addEventListener("load", init, false);

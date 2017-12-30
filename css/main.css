@@ -177,14 +177,18 @@ section, footer, header{
   border : 3px outset sandybrown;
   }
 
-/* Style the user section */
+/* Style the user section
 #user{
   border : 2px outset green;
   }
 
+*/
 #userText{
-  border        : 2px solid yellow;
-  border-radius : 5px;
+  border        : 0.5em inset greenyellow;
+  border-radius : 0.5em;
+  padding       : 0.5em;
+  font-size     : 140%;
+  text-align    : center;
   }
 
 #action_button{
@@ -194,9 +198,9 @@ section, footer, header{
   }
 
 #testContent{
-  font       : normal 140%/2em Verdana, Geneva, sans-serif;
-  letter-spacing: 0.1em;
-  text-align : left;
+  font           : normal 140%/2em Verdana, Geneva, sans-serif;
+  letter-spacing : 0.1em;
+  text-align     : left;
   }
 
 #testTitle, #authorAndStatistics{ text-align : center; }
@@ -216,7 +220,7 @@ section, footer, header{
   }
 
 /* Styles for the statistics section */
-#statistics{ border : 1px solid yellow; }
+/*#statistics{ border : 1px solid yellow; }*/
 
 #statsTable{ max-width : 100%; }
 
@@ -247,7 +251,8 @@ section, footer, header{
  */
 @media only screen and (max-width : 599px){
 
-  html{width: 98%;}
+  html{ width : 98%; }
+
   body{ max-width : 96% }
 
   #pageHeader, #test, #user, #statistics, #footer, #settings{
@@ -260,10 +265,13 @@ section, footer, header{
 	width         : 90%;
 	}
 
-  *{font-size: smaller;}
+  *{ font-size : smaller; }
+
   #caseL, #lang, #textChoice{ margin-bottom : 10px; }
 
   #textChoice{ margin-top : 10px; }
 
   #text{ position : absolute; }
+
+  #title{ margin : 10px auto; }
   }

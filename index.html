@@ -80,8 +80,8 @@ Last Modified   : 2017-12-29
                 <h2 class="hide">This is the test section</h2>
                 <label for="userText">
                     <input type="text" name="userText" id="userText"
-                           placeholder="Type here.."
-                           autocomplete="off">
+                           placeholder="Type here ..."
+                           autocomplete="off" spellcheck="false">
                 </label>
 
                 <!-- update button image depending on program state
@@ -106,16 +106,32 @@ Last Modified   : 2017-12-29
                         <td id="gwpm">Gross WPM:</td>
                         <td><span id="grossWPM" class="result">0</span></td>
                         <td id="acc">Accuracy:</td>
-                        <td><span id="accuracy" class="result">100</span>%</td>
+                        <td><span id="accuracy" class="result">0</span> %</td>
                     </tr>
                     <tr>
                         <td id="nwpm">Net WPM:</td>
-                        <td><span id="netWPM" class="result">35</span></td>
+                        <td><span id="netWPM" class="result">0</span></td>
                         <td id="err">Errors:</td>
                         <td><span id="errors" class="result">0</span></td>
                     </tr>
                 </table>
+                <p id="time" class="reset"><span id="timer"></span>
+                    <span id="seconds"></span></p>
             </section>
+            <audio id="shout" class="hide" preload="metadata">
+                <source src="audio/wrong.mp3" type="audio/mpeg">
+                <source src="audio/wrong.ogg" type="audio/ogg">
+                <source src="audio/wrong.wav" type="audio/wav">
+                A sound was supposed to be played but your browser seem too
+                obsolete for the <code>audio</code> tag
+            </audio>
+            <audio id="clap" class="hide" preload="metadata">
+                <source src="audio/clap.mp3" type="audio/mpeg">
+                <source src="audio/clap.ogg" type="audio/ogg">
+                <source src="audio/clap.wav" type="audio/wav">
+                A sound was supposed to be played but your browser seem too
+                obsolete for the <code>audio</code> tag
+            </audio>
         </main>
         <footer id="footer">
             <p>Copyright &copy; <span id="year"></span> Bernard Che Longho. No

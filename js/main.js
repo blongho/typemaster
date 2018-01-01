@@ -29,7 +29,6 @@ var Test = {
 };
 
 var tick = true;
-var textArray = [];// Array of text objects
 
 var spanChars; // a list of all the test characters
 
@@ -37,8 +36,8 @@ var currentTestText = ""; // get the current text in the test area.
 var tractTest = "";
 var actionButtons = [];  // array that holds play/stop action buttons
 
-var testTitle = document.getElementById("testTitle"); // title of test text
-var textSummary = document.getElementById("authorAndStatistics"); // summary
+var engTexts = [], // array to hold english texts
+	sweTexts = []; // array to hold swedish texts
 
 /**
  * Read xml file
@@ -69,7 +68,6 @@ function loadTexts() {
 			var langList = object.getElementsByTagName("language");
 
 			var len = texts.length;
-
 			for (var i = 0; i < len; i++) {
 
 				var test = Object.create(Test);
@@ -78,13 +76,16 @@ function loadTexts() {
 				test.author = authorList[i].firstChild.data;
 				test.lang = langList[i].firstChild.data;
 				test.text = texts[i].firstChild.data;
-				textArray.push(test);
+
+				test.lang === "english" ? engTexts.push(test) :
+					sweTexts.push(test);
 			}
 		}
 	};
 	xhr.open("GET", "texts.xml", false);
 	xhr.send(null);
-	//console.log(textArray);
+	//console.log(engTexts);
+	//console.log(sweTexts);
 }
 
 /**
@@ -104,16 +105,16 @@ function getSelectedLanguage() {
  */
 function addOptions() {
 	var textOptions = document.getElementById("text");
+	var arr = getSelectedLanguage() === "english" ? engTexts : sweTexts;
 
 	// clear all options if there are any
 	if (textOptions.length !== 0) textOptions.length = 0;
 
-	for (var i = 0; i < textArray.length; i++) {
+	for (var i = 0; i < arr.length; i++) {
 		var option = document.createElement("option");
-		if (textArray[i].lang === getSelectedLanguage()) {
-			var title = textArray[i].title;
-			option.value = title;
-			option.text = title;
+		if (arr[i].lang === getSelectedLanguage()) {
+			option.value = arr[i].title;
+			option.text = arr[i].title;
 			textOptions.add(option);
 		}
 	}
@@ -167,11 +168,12 @@ function translateInterface() {
  * @param option The option selected
  */
 function addTestText(option) {
+	var arr = getSelectedLanguage() === "english" ? engTexts : sweTexts;
 
-	for (var i = 0; i < textArray.length; i++) {
-		if (option === textArray[i].title) {
+	for (var i = 0; i < arr.length; i++) {
+		if (option === arr[i].title) {
 			var test = Object.create(Test);
-			test = textArray[i];
+			test = arr[i];
 		}
 	}
 	document.getElementById("testTitle").innerHTML = test.title;
@@ -182,11 +184,12 @@ function addTestText(option) {
 
 	currentTestText = test.text;
 
-
 	// get the list of all the characters and highlight first character
 	spanChars = document.getElementsByClassName("char");
 	spanChars[0].style.backgroundColor = "grey";
 	tractTest = spanChars;
+	//console.log(tractTest);
+
 	//console.clear();
 	//console.log("Test text..\n " + currentTestText + "\nWords : " +
 	//	currentTestText.split(" ").length);

@@ -9,9 +9,7 @@ var startTime = 0;  // start time
 var stopTime;   // end time of game
 var maxTime;    // maximum time for the game (2 minutes)
 var typedIndex = 0; // index of currently typed text
-var trackingIndex = 1; // index of test text
-
-var typedEntries = 0;
+var trackingIndex = typedIndex + 1; // index of test text
 
 function displayTime() {
 	if (tick) {
@@ -39,10 +37,34 @@ function displayTime() {
 
 }
 
+/**
+ * End game
+ */
 function endGame() {
 	document.getElementById("userText").disabled = true;
 	//pauseGame();
+}
 
+/**
+ * Dynamically update statistics as the user types
+ * @param typed Number of entries typed
+ * @param correct Number of correct entries typed
+ * @param errors Number of mis-match entries typed
+ * @param time Time elapsed since typing started.
+ */
+
+function updateStatistics(typed, correct, errors, time) {
+	var textLength = tractTest.length; // number of characters for the test text
+
+	document.getElementById("errors").innerHTML = errors;
+	document.getElementById("accuracy").innerHTML =
+		(correct / textLength * 100).toFixed();
+
+	var gross = (typed / 5) / time;
+	document.getElementById("grossWPM").innerHTML = gross.toFixed();
+
+	document.getElementById("netWPM").innerHTML =
+		(gross - (errors / time)).toFixed();
 }
 
 /**
@@ -53,9 +75,8 @@ function endGame() {
  * @param c2 Character2 to compare
  * @returns {boolean} true if they are the same characters
  */
-function compareChar(c1, c2) {
-	var ignoreChecked = document.settingsForm.case.checked;
-	if (ignoreChecked) {
+function isSameChar(c1, c2) {
+	if (document.settingsForm.case.checked) {
 		return c1.toLowerCase() === c2.toLowerCase();
 	}
 	return c1 === c2;
@@ -73,55 +94,55 @@ function compareChar(c1, c2) {
  * Input field is disabled when all text is highlighted.
  */
 function measurements() {
-
-	var grossWPM = document.getElementById("grossWPM");// gross WPM
-	var errors = document.getElementById("errors"); // number of
-	var netWPM = document.getElementById("netWPM");// net WPM in
-	var accuracy = document.getElementById("accuracy");// the
-
 	var timer = document.getElementById("timer");
+	var typedEntries = 0;
+	var errorEntries = 0;
+	var correctEntries = 0;
 
-	var error = 0;
-	var correct = 0;
 	var len = tractTest.length;
+	//console.log(tractTest);
+
 	const startTime = new Date().getTime();
 
 	document.getElementById("userText").addEventListener("input", function () {
 		var typed = document.getElementById("userText").value;
 
-		var lastChar = typed[typed.length - 1];
+		typedEntries++;
+
+		var typedChar = typed[typed.length - 1];
 
 		var errorChar = tractTest[typedIndex];
 
-		tractTest[trackingIndex].style.backgroundColor = "grey";
+		tractTest[typedEntries].style.backgroundColor = "grey";
 
 		// clear input fill when whitespace is encountered
-		if (!isChar(lastChar)) {
+		if (!isChar(typedChar)) {
 			this.value = "";
 		}
-		if (compareChar(lastChar, currentTestText[typedIndex])) {
-			++correct;
-			accuracy.innerHTML = (correct / len * 100).toFixed();
+		if (isSameChar(typedChar, currentTestText[typedIndex])) {
+			++correctEntries;
 		} else {
 			if (isChar(errorChar)) {
 				errorChar.style.color = "red";
 			}
-			errors.innerHTML = ++error;
 			document.getElementById("shout").play();
+			++errorEntries;
 		}
+		var now = new Date().getTime();
+		var timeElapsed = (now - startTime) / 60000;
+
+		timer.innerHTML = "Time elapsed : " + ((now - startTime) / 1000).toFixed();
+
+		updateStatistics(typedEntries, correctEntries, errorEntries,
+			timeElapsed);
 
 		++typedIndex;
 		++trackingIndex;
-		var nt = (new Date().getTime() - startTime) / 1000;
 
-		if (trackingIndex === len) { // end of test text reached
-			timer.innerHTML =nt.toFixed() < 10 ? "0" + nt.toFixed() : nt.toFixed();
-
+		if (typedEntries === len) { // end of test text reached
 			endGame();
 		}
-		console.log("Time passed: " + nt.toFixed());
-		console.log("\nTyped index = " + typedIndex + "\nTracking index =" +
-			trackingIndex);
+		console.log("Typed entries : " + typedEntries);
 	}, false);
 
 }
@@ -176,8 +197,8 @@ function colorResults() {
 function init() {
 	colorResults();
 	measurements();
-	console.log(isChar(" "));
-	console.log(isChar("g"));
+	//console.log(isChar(" "));
+	//console.log(isChar("g"));
 }
 
 window.addEventListener("load", init, false);

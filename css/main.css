@@ -274,4 +274,6 @@ section, footer, header{
   #text{ position : absolute; }
 
   #title{ margin : 10px auto; }
+
+  #userText {max-width: 80%;}
   }

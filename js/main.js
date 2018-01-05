@@ -2,7 +2,7 @@
  * @file main.js
  * @author Bernard Che Longho (lobe1602) lobe1602@student.miun.se
  * @desc Javascript functions for typing game
- * @since 2017-12-29
+ * @since 2018-01-05
  */
 
 /**
@@ -27,8 +27,6 @@ var Test = {
 			" chars)");
 	}
 };
-
-var tick = true;
 
 var spanChars; // a list of all the test characters
 
@@ -92,10 +90,8 @@ function loadTexts() {
  * Get the language the user chose to type with
  * @returns {string|Number} The language of the text to display
  */
-function getSelectedLanguage() {
+function selectedLanguage() {
 	return document.settingsForm.interface.value;
-	//return
-	// document.querySelector('input[name="interface"]:checked').value;
 }
 
 /**
@@ -105,21 +101,21 @@ function getSelectedLanguage() {
  */
 function addOptions() {
 	var textOptions = document.getElementById("text");
-	var arr = getSelectedLanguage() === "english" ? engTexts : sweTexts;
+	var arr = selectedLanguage() === "english" ? engTexts : sweTexts;
 
 	// clear all options if there are any
 	if (textOptions.length !== 0) textOptions.length = 0;
 
 	for (var i = 0; i < arr.length; i++) {
 		var option = document.createElement("option");
-		if (arr[i].lang === getSelectedLanguage()) {
+		if (arr[i].lang === selectedLanguage()) {
 			option.value = arr[i].title;
 			option.text = arr[i].title;
 			textOptions.add(option);
 		}
 	}
 	var choice = textOptions.options[textOptions.selectedIndex].value;
-	addTestText(choice)
+	addTestText(choice);
 }
 
 /**
@@ -138,7 +134,7 @@ function translateInterface() {
 	var title = document.getElementById("title"); // app title
 	var headTitle = document.getElementById("headTitle"); // window header
 
-	switch (getSelectedLanguage().toLowerCase()) {
+	switch (selectedLanguage().toLowerCase()) {
 		case "swedish":
 			ignore.innerHTML = "Ignorera versaler / gemener";
 			swe.innerHTML = "Svenska";
@@ -168,7 +164,7 @@ function translateInterface() {
  * @param option The option selected
  */
 function addTestText(option) {
-	var arr = getSelectedLanguage() === "english" ? engTexts : sweTexts;
+	var arr = selectedLanguage() === "english" ? engTexts : sweTexts;
 
 	for (var i = 0; i < arr.length; i++) {
 		if (option === arr[i].title) {
@@ -176,6 +172,7 @@ function addTestText(option) {
 			test = arr[i];
 		}
 	}
+	resetGame();
 	document.getElementById("testTitle").innerHTML = test.title;
 	document.getElementById("authorAndStatistics").innerHTML =
 		test.summary();
@@ -188,12 +185,7 @@ function addTestText(option) {
 	spanChars = document.getElementsByClassName("char");
 	spanChars[0].style.backgroundColor = "grey";
 	tractTest = spanChars;
-	//console.log(tractTest);
-
-	//console.clear();
-	//console.log("Test text..\n " + currentTestText + "\nWords : " +
-	//	currentTestText.split(" ").length);
-
+	//console.log(spanChars);
 }
 
 /**
@@ -210,6 +202,7 @@ function loadActionButtons() {
 
 	actionButtons.push(play);
 	actionButtons.push(stop);
+	console.log(actionButtons)
 }
 
 /**
@@ -239,7 +232,6 @@ function languageChangeEvents() {
 	for (var i = 0; i < langOptions.length; i++) {
 		langOptions[i].addEventListener("click", translateInterface, false);
 		langOptions[i].addEventListener("click", addOptions, false);
-		langOptions[i].addEventListener("click", resetActionButton, false);
 		langOptions[i].addEventListener("click", resetGame, false);
 	}
 }
@@ -277,32 +269,14 @@ function changeActionButton() {
 }
 
 /**
- * Reset all results to zero
- */
-function resetStatistics() {
-	document.getElementById("grossWPM").innerHTML = 0;
-	document.getElementById("errors").innerHTML = 0;
-	document.getElementById("netWPM").innerHTML = 0;
-	document.getElementById("accuracy").innerHTML = 0;
-}
-
-/**
  * Reset the action button to play
  */
 function resetActionButton() {
 	var actionImage = document.getElementById("action_image");
-	actionImage.src = actionButtons[0].src;
-	actionImage.alt = actionButtons[0].alt;
-}
-
-function pauseGame() {
-	tick = false;
-	//displayTime();
-}
-
-function continueGame() {
-	tick = true;
-	//displayTime();
+	if (actionButtons.length !== 0) {
+		actionImage.src = actionButtons[0].src;
+		actionImage.alt = actionButtons[0].alt;
+	}
 }
 
 /**
@@ -329,8 +303,7 @@ function init() {
 	loadTexts();
 	addOptions();
 	loadActionButtons();
-	//changeActionButton();
-
+	resetGame();
 	changeTest();
 	languageChangeEvents();
 	translateInterface();

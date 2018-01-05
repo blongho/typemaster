@@ -240,7 +240,26 @@ section, footer, header{
   color      : white;
   }
 
-#footer p{ padding-top : 10px; }
+#footer p{
+  padding-top : 10px;
+  text-align  : center;
+  }
+
+@keyframes blink{
+  50%{ opacity : 0.5; }
+  }
+
+#testInfo{
+  animation        : blink 3s linear 5;
+  display          : none;
+  text-align       : center;
+  margin           : 1em;
+  padding          : 1em;
+  font-size        : 140%;
+  background-color : blue;
+  color            : white;
+  font-weight      : bold;
+  }
 
 /*.char:first-child{
   background-color: grey;
@@ -275,5 +294,6 @@ section, footer, header{
 
   #title{ margin : 10px auto; }
 
-  #userText {max-width: 80%;}
+  #userText{ max-width : 80%; }
+
   }

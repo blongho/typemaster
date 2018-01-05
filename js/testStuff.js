@@ -4,45 +4,30 @@
  * @desc File with js functions that handle the typing tracking and results
  * display
  */
-var seconds = 0;
-var startTime = 0;  // start time
-var stopTime;   // end time of game
-var maxTime;    // maximum time for the game (2 minutes)
+var minutes = 0;
+var startTime = 0;
+var endTime = 0;
 var typedIndex = 0; // index of currently typed text
 var trackingIndex = typedIndex + 1; // index of test text
+var typedEntries = 0;
+var errorEntries = 0;
+var correctEntries = 0;
+var sec = 0;
 
-function displayTime() {
-	if (tick) {
-		++seconds;
-	}
-
-	var timer = document.getElementById("timer");
-	var sec = document.getElementById("seconds");
-	var p = document.getElementById("time");
-	p.style.border = "1px inset green";
-	p.style.padding = "0.5em";
-	p.style.backgroundColor = "white";
-	p.style.font = "bold 140% Verdana, serif";
-	//timer.style.color = seconds < 30 ? "green" : "red";
-	//timer.innerHTML = seconds < 10 ? "0" + seconds : seconds;
-
-	sec.style.color = "black";
-	sec.innerHTML = " seconds";
-//	if (seconds >= 120) {
-//		tick = false;
-//		document.getElementById("userText").disabled = true;
-//		sec.innerHTML = "";
-//		timer.innerHTML = "TIME LIMIT <<" + seconds + ">> SECONDS REACHED"
-//	}
-
-}
+const maxTime = 300;    // maximum time for the game (5 minutes)
+const alertTime = 5; // Time to display telling the user that test is on
 
 /**
  * End game
+ * Disable input area and give it another color
  */
 function endGame() {
-	document.getElementById("userText").disabled = true;
-	//pauseGame();
+	var userText = document.getElementById("userText");
+	userText.placeholder = "";
+	userText.value = "GAME ENDED";
+	userText.style.backgroundColor = "#ff794d";
+	userText.disabled = true;
+	document.getElementById("endSound").play();
 }
 
 /**
@@ -54,17 +39,17 @@ function endGame() {
  */
 
 function updateStatistics(typed, correct, errors, time) {
-	var textLength = tractTest.length; // number of characters for the test text
-
 	document.getElementById("errors").innerHTML = errors;
 	document.getElementById("accuracy").innerHTML =
-		(correct / textLength * 100).toFixed();
+		(correct / tractTest.length * 100).toFixed();
 
 	var gross = (typed / 5) / time;
 	document.getElementById("grossWPM").innerHTML = gross.toFixed();
 
 	document.getElementById("netWPM").innerHTML =
 		(gross - (errors / time)).toFixed();
+
+	//console.log("Value of time is " + time*60);
 }
 
 /**
@@ -80,8 +65,6 @@ function isSameChar(c1, c2) {
 		return c1.toLowerCase() === c2.toLowerCase();
 	}
 	return c1 === c2;
-	//console.log("Value of ignoreChecked = " + ignoreChecked);
-
 }
 
 /**
@@ -93,58 +76,120 @@ function isSameChar(c1, c2) {
  * based <br/>whether or not the chars are equal.
  * Input field is disabled when all text is highlighted.
  */
-function measurements() {
+function runTest() {
 	var timer = document.getElementById("timer");
-	var typedEntries = 0;
-	var errorEntries = 0;
-	var correctEntries = 0;
+	var userText = document.getElementById("userText");
 
-	var len = tractTest.length;
-	//console.log(tractTest);
-
-	const startTime = new Date().getTime();
-
-	document.getElementById("userText").addEventListener("input", function () {
-		var typed = document.getElementById("userText").value;
+	userText.addEventListener("input", function () {
+		var input = document.getElementById("userText").value;
 
 		typedEntries++;
 
-		var typedChar = typed[typed.length - 1];
+		var typedChar = input[input.length - 1]; // the just typed char
 
-		var errorChar = tractTest[typedIndex];
+		var testChar = tractTest[typedIndex];
 
-		tractTest[typedEntries].style.backgroundColor = "grey";
+		if (trackingIndex < tractTest.length) {
+			tractTest[trackingIndex].style.backgroundColor = "grey";
+			trackingIndex++;
+
+		}
+
+		// alertStart();
 
 		// clear input fill when whitespace is encountered
 		if (!isChar(typedChar)) {
 			this.value = "";
 		}
-		if (isSameChar(typedChar, currentTestText[typedIndex])) {
+		if (isSameChar(typedChar, testChar.innerHTML)) {
 			++correctEntries;
 		} else {
-			if (isChar(errorChar)) {
-				errorChar.style.color = "red";
+			if (isChar(testChar.innerHTML)) {
+				testChar.style.color = "red";
+				document.getElementById("shout").play();
 			}
-			document.getElementById("shout").play();
 			++errorEntries;
 		}
-		var now = new Date().getTime();
-		var timeElapsed = (now - startTime) / 60000;
+		endTime = new Date().getTime();
 
-		timer.innerHTML = "Time elapsed : " + ((now - startTime) / 1000).toFixed();
+		sec = (endTime - startTime) / 1000;
 
-		updateStatistics(typedEntries, correctEntries, errorEntries,
-			timeElapsed);
+		minutes = sec / 60;
+
+		updateStatistics(typedEntries, correctEntries, errorEntries, minutes);
+
+		timer.innerHTML = "Time elapsed : " + formattedTime(sec);
 
 		++typedIndex;
-		++trackingIndex;
 
-		if (typedEntries === len) { // end of test text reached
+		if ((typedIndex === tractTest.length) ||(sec.toFixed() >= maxTime)) {
 			endGame();
 		}
-		console.log("Typed entries : " + typedEntries);
+
 	}, false);
 
+}
+
+/**
+ * Reset the input area
+ */
+function resetInput() {
+	var userText = document.getElementById("userText");
+	userText.value = "";
+	if (selectedLanguage().toLowerCase() === "swedish") {
+		userText.placeholder = "Skriv här ...";
+	}
+	else {
+		userText.placeholder = "Type here ...";
+	}
+	userText.style.backgroundColor = "white";
+	userText.disabled = false;
+}
+
+/**
+ * Print a 5 seconds message informing that timing has started
+ */
+function alertStart() {
+	var briefInfo = document.getElementById("testInfo");
+	if (sec > 0 && sec <= alertTime) {
+		briefInfo.style.display = "block";
+		briefInfo.innerHTML = "Timer has started. Test STOPS in 5 minutes";
+	}
+	else {
+		briefInfo.style.display = "none";
+	}
+}
+
+/**
+ * Small snippet to convert total seconds to hh:mm:ss <br />
+ * Source: https://gist.github.com/martinbean/2bf88c446be8048814cf02b2641ba276
+ * @param totalSec Seconds to convert to hh:mm:ss
+ * @returns {string} hh:mm:ss
+ */
+function formattedTime(totalSec) {
+	return new Date(totalSec * 1000).toISOString().substr(11, 8);
+}
+
+/**
+ * Reset all results to zero and the typedIndex to the starting position (0)
+ */
+function resetStatistics() {
+	document.getElementById("grossWPM").innerHTML = 0;
+	document.getElementById("errors").innerHTML = 0;
+	document.getElementById("netWPM").innerHTML = 0;
+	document.getElementById("accuracy").innerHTML = 0;
+	document.getElementById("timer").innerHTML = "";
+	//document.getElementById("testInfo").innerHTML = "";
+	typedIndex = 0;
+	trackingIndex = typedIndex + 1;
+	startTime = 0;
+	endTime = 0;
+	sec = 0;
+	minutes = 0;
+	typedEntries = 0;
+	errorEntries = 0;
+	correctEntries = 0;
+	resetInput();
 }
 
 /**
@@ -158,16 +203,15 @@ function isChar(char) {
 
 /**
  * Start timer: Call this when user starts typing.
- * The method setInterval calls updateTimer() which increments seconds every
+ * The method setInterval calls updateTimer() which increments minutes every
  * 1000 milliseconds = 1 second
  */
 function inputEvents() {
 	var userText = document.getElementById("userText");
 
-	/*userText.addEventListener(
-	 "click", function () {
-	 setInterval("displayTime()", 1000);
-	 }, false);*/
+	userText.addEventListener("click", function () {
+		startTime = sec === 0 ? new Date().getTime() : startTime;
+	}, false);
 
 	userText.addEventListener("click", function () {
 		this.placeholder = "";
@@ -177,30 +221,9 @@ function inputEvents() {
 
 }
 
-/**
- * Give different colors to the user statistics based on their performance
- */
-function colorResults() {
-	var results = document.getElementsByClassName("result");
-	for (var i = 0; i < results.length; i++) {
-		if (results[i].innerHTML < Number(30)) {
-			results[i].style.color = "red";
-		} else if (results[i].innerHTML > Number(30) && results[i].innerHTML <
-			Number(50)) {
-			results[i].style.color = "lightgreen";
-		} else {
-			results[i].style.color = "green";
-		}
-	}
+function test() {
+	inputEvents();
+	runTest();
 }
 
-function init() {
-	colorResults();
-	measurements();
-	//console.log(isChar(" "));
-	//console.log(isChar("g"));
-}
-
-window.addEventListener("load", init, false);
-window.addEventListener("load", inputEvents, false);
-//window.addEventListener("load", endGame, false);
+window.addEventListener("load", test, false);

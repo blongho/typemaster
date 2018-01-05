@@ -2,7 +2,7 @@
 File Name       : index.html
 Author          : Bernard Che Longho (lobe1602) <lobe1602[at]student.miun.se>
 Creation date   : 2017-12-24
-Last Modified   : 2017-12-29
+Last Modified   : 2018-01-05
 -->
 <!doctype html>
 <html lang="en">
@@ -88,8 +88,8 @@ Last Modified   : 2017-12-29
                  play : when program is stopped (not running)
                  stop : when program is running
                  -->
+                <p id="testInfo"></p>
                 <button id="action_button">
-
                     <img src="img/play.png" alt="play button"
                          id="action_image">
                 </button>
@@ -119,16 +119,16 @@ Last Modified   : 2017-12-29
                     <span id="seconds"></span></p>
             </section>
             <audio id="shout" class="hide" preload="metadata">
-                <source src="audio/wrong.mp3" type="audio/mpeg">
-                <source src="audio/wrong.ogg" type="audio/ogg">
-                <source src="audio/wrong.wav" type="audio/wav">
+                <source src="audio/keystroke.mp3" type="audio/mpeg">
+                <source src="audio/keystroke.ogg" type="audio/ogg">
+                <source src="audio/keystroke.wav" type="audio/wav">
                 A sound was supposed to be played but your browser seem too
                 obsolete for the <code>audio</code> tag
             </audio>
-            <audio id="clap" class="hide" preload="metadata">
-                <source src="audio/clap.mp3" type="audio/mpeg">
-                <source src="audio/clap.ogg" type="audio/ogg">
-                <source src="audio/clap.wav" type="audio/wav">
+            <audio id="endSound" class="hide" preload="metadata">
+                <source src="audio/wrong.mp3" type="audio/mpeg">
+                <source src="audio/wrong.ogg" type="audio/ogg">
+                <source src="audio/wrong.wav" type="audio/wav">
                 A sound was supposed to be played but your browser seem too
                 obsolete for the <code>audio</code> tag
             </audio>

@@ -13,6 +13,7 @@ var typedEntries = 0;
 var errorEntries = 0;
 var correctEntries = 0;
 var sec = 0;
+var netWPM = 0;
 
 const maxTime = 300;    // maximum time for the game (5 minutes)
 const alertTime = 5; // Time to display telling the user that test is on
@@ -22,12 +23,17 @@ const alertTime = 5; // Time to display telling the user that test is on
  * Disable input area and give it another color
  */
 function endGame() {
+	var actionImage = document.getElementById("action_image");
 	var userText = document.getElementById("userText");
 	userText.placeholder = "";
 	userText.value = "GAME ENDED";
 	userText.style.backgroundColor = "#ff794d";
 	userText.disabled = true;
 	document.getElementById("endSound").play();
+	actionImage.src = actionButtons[2].src;
+	actionImage.alt = actionButtons[2].alt;
+	actionImage.title = actionButtons[2].title;
+	actionImage.style.width = 80;
 }
 
 /**
@@ -38,6 +44,20 @@ function endGame() {
  * @param time Time elapsed since typing started.
  */
 
+function drawProgress(speed){
+	var canvas = document.getElementById("progressGraph");
+	var context = canvas.getContext("2d");
+	context.beginPath();
+	var prevPoint = speed;
+	var currPoint = netWPM;
+
+	context.moveTo(0, speed);
+	context.lineTo(sec, speed);
+	context.lineWidth = 1;
+	context.strokeStyle = "yellow";
+
+	context.stroke();
+}
 function updateStatistics(typed, correct, errors, time) {
 	document.getElementById("errors").innerHTML = errors;
 	document.getElementById("accuracy").innerHTML =
@@ -46,8 +66,11 @@ function updateStatistics(typed, correct, errors, time) {
 	var gross = (typed / 5) / time;
 	document.getElementById("grossWPM").innerHTML = gross.toFixed();
 
-	document.getElementById("netWPM").innerHTML =
-		(gross - (errors / time)).toFixed();
+	netWPM = (gross - (errors / time)).toFixed();
+	document.getElementById("netWPM").innerHTML =netWPM.toString();
+
+	//drawProgress(netWPM);
+
 
 	//console.log("Value of time is " + time*60);
 }
@@ -79,6 +102,7 @@ function isSameChar(c1, c2) {
 function runTest() {
 	var timer = document.getElementById("timer");
 	var userText = document.getElementById("userText");
+	var briefInfo = document.getElementById("testInfo");
 
 	userText.addEventListener("input", function () {
 		var input = document.getElementById("userText").value;
@@ -94,7 +118,6 @@ function runTest() {
 			trackingIndex++;
 
 		}
-
 		// alertStart();
 
 		// clear input fill when whitespace is encountered
@@ -102,12 +125,13 @@ function runTest() {
 			this.value = "";
 		}
 		if (isSameChar(typedChar, testChar.innerHTML)) {
+			testChar.style.color = "green";
 			++correctEntries;
 		} else {
 			if (isChar(testChar.innerHTML)) {
 				testChar.style.color = "red";
-				document.getElementById("shout").play();
 			}
+			document.getElementById("shout").play();
 			++errorEntries;
 		}
 		endTime = new Date().getTime();
@@ -122,7 +146,8 @@ function runTest() {
 
 		++typedIndex;
 
-		if ((typedIndex === tractTest.length) ||(sec.toFixed() >= maxTime)) {
+		if ((typedIndex === tractTest.length) || (sec.toFixed() >= maxTime)) {
+			displayStopReason();
 			endGame();
 		}
 
@@ -149,14 +174,22 @@ function resetInput() {
 /**
  * Print a 5 seconds message informing that timing has started
  */
-function alertStart() {
+function displayStopReason() {
 	var briefInfo = document.getElementById("testInfo");
-	if (sec > 0 && sec <= alertTime) {
-		briefInfo.style.display = "block";
-		briefInfo.innerHTML = "Timer has started. Test STOPS in 5 minutes";
+	briefInfo.style.display = "block";
+	if (sec >= maxTime) {
+		if (selectedLanguage() === "english") {
+			briefInfo.innerHTML = "You have exceeded the time limit [5 minutes]";
+		} else {
+			briefInfo.innerHTML = "Den maximala test tiden är passerade [5 minuter]";
+		}
 	}
-	else {
-		briefInfo.style.display = "none";
+	else if (typedIndex === tractTest.length) {
+		if (selectedLanguage() === "english") {
+			briefInfo.innerHTML = "You have reached the end of the test text";
+		} else {
+			briefInfo.innerHTML = "Test texten är slut!";
+		}
 	}
 }
 
@@ -222,6 +255,7 @@ function inputEvents() {
 }
 
 function test() {
+	//drawProgress(netWPM);
 	inputEvents();
 	runTest();
 }

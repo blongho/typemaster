@@ -56,15 +56,46 @@ table{
 /**
 END OF RESET
  */
+
+/**
+  Load downloaded fonts
+ */
+
 @font-face{
-  font-family : "Caviar Dreams";
-  src         : url("../font/Caviar-Dreams");
+  font-family : "CaviarDreams_bold";
+  src         : url("../font/Caviar_Dreams/Caviar_Dreams_Bold.ttf") format("ttf"),
+  url("../font/Caviar_Dreams/CaviarDreams_BoldItalic.ttf") format("ttf"),
+  local("Open Sans");
   }
 
 @font-face{
-  font-family : "Source Code Pro";
-  src         : local("Source Code Pro");
-  src         : url("../font/source-code-pro");
+  font-family : "CaviarDreams_normal";
+  src         : url("../font/Caviar_Dreams/CaviarDreams.ttf") format("ttf"),
+  url("../font/Caviar_Dreams/CaviarDreams_Italic.ttf") format("ttf"),
+  local("Open Sans");
+  }
+
+@font-face{
+  font-family : "MySourceCodePro_black";
+  src         : url("../font/source_code_pro/SourceCodePro-Black.otf") format("otf"),
+  url("../font/source_code_pro/SourceCodePro-BlackIt.otf") format("otf"),
+  local("Source Code Pro");
+  }
+
+@font-face{
+  font-family : "MySourceCodePro_bold";
+  src         : url("../font/source_code_pro/SourceCodePro-Bold.otf") format("otf"),
+  url("../font/source_code_pro/SourceCodePro-BoldIt.otf") format("otf"),
+  local("Source Code Pro");
+
+  }
+
+@font-face{
+  font-family : "MySourceCodePro_ExtraLight";
+  src         : url("../font/source_code_pro/SourceCodePro-ExtraLight.otf") format("otf"),
+  url("../font/source_code_pro/SourceCodePro-ExtraLightIt.otf") format("otf"),
+  local("Source Code Pro");
+
   }
 
 html{
@@ -75,8 +106,8 @@ html{
 
 body{
   position      : relative;
-  background    : #262626 url("../img/dark3.png") repeat;
-  opacity       : 0.8;
+  background    : #262626 url("../img/dark2.png") repeat;
+  opacity       : 1;
   border        : 2px inset #fafad2;
   box-shadow    : -5px 5px 25px black;
   border-radius : 5px;
@@ -124,7 +155,7 @@ body{
   float     : left;
   margin    : 5px 5px 5px 65px;
   padding   : 5px;
-  font      : bold 12pt 'Source Code Pro', sans-serif;
+  font      : bold 12pt 'MySourceCodePro_bold', sans-serif;
   animation : spinTitle 20s infinite;
   }
 
@@ -138,7 +169,7 @@ body{
 #textChoice{
   position     : relative;
   float        : right;
-  margin-right : 80px;
+  margin-right : 150px;
   margin-top   : -35px;
   }
 
@@ -206,11 +237,11 @@ section, footer, header{
 #testTitle, #authorAndStatistics{ text-align : center; }
 
 #testTitle{
-  font : bold italic 160%/2em "Caviar Dreams", sans-serif;
+  font : bold italic 160%/2em "CaviarDreams_bold", sans-serif;
   }
 
 #authorAndStatistics{
-  font  : bold italic 120%/2em "Comic Sans MS", cursive, sans-serif;
+  font  : bold italic 120%/2em "MySourceCodePro", cursive, sans-serif;
   color : greenyellow;
   }
 
@@ -245,6 +276,18 @@ section, footer, header{
   text-align  : center;
   }
 
+#contact{
+  color: white;
+  text-decoration: none;
+  }
+#contact:hover{
+  color: green;
+  font-size : 120%;
+  }
+#contact:active{
+  font-size : 140%;
+  }
+
 @keyframes blink{
   50%{ opacity : 0.5; }
   }
@@ -261,9 +304,9 @@ section, footer, header{
   font-weight      : bold;
   }
 
-/*.char:first-child{
-  background-color: grey;
-  }*/
+#progressGraph{
+  border : 1px solid salmon;
+  }
 
 /*
   Some media queries for devices with width < 600px

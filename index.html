@@ -1,4 +1,4 @@
-<!---
+<!--
 File Name       : index.html
 Author          : Bernard Che Longho (lobe1602) <lobe1602[at]student.miun.se>
 Creation date   : 2017-12-24
@@ -14,14 +14,18 @@ Last Modified   : 2018-01-05
         <meta name="description"
               content="A web application for the measurement of typing speed in
               words per minute and the typing accuracy of the user">
+        <link rel="shortcut icon" href="http://www.miun.se/favicon.ico"/>
+
         <title id="headTitle">Measure your typing speed and accuracy</title>
         <link rel="stylesheet" href="css/main.css" type="text/css">
-        <script src="js/main.js"></script>
-        <script src="js/testStuff.js"></script>
+        <script src="js/main.js" type="text/javascript"></script>
+        <script src="js/testStuff.js" type="text/javascript"></script>
     </head>
     <body>
         <header id="pageHeader">
-            <img src="img/wpm-laptop.jpg" alt="wpm-laptop" id="logo">
+            <a href="index.html">
+                <img src="img/wpm-laptop.jpg" alt="wpm-laptop" id="logo">
+            </a>
             <h1 id="title">Measure your typing speed and accuracy</h1>
             <!-- The user sets the interface and chooses how s(he) will be
            evaluated [uppercase or not in the accuracy calculations] -->
@@ -101,6 +105,7 @@ Last Modified   : 2018-01-05
             -->
             <section id="statistics">
                 <h2 class="hide">The statistics section</h2>
+                <canvas id="progressGraph" width="200" height="50"></canvas>
                 <table id="statsTable">
                     <tr>
                         <td id="gwpm">Gross WPM:</td>
@@ -134,8 +139,11 @@ Last Modified   : 2018-01-05
             </audio>
         </main>
         <footer id="footer">
-            <p>Copyright &copy; 2017 - <span id="year"></span> Bernard Che Longho. No
-                rights reserved</p>
+            <p>Copyright &copy; 2017 - <span id="year"></span> Bernard Che
+                Longho. No
+                rights reserved.</p><p><a
+                    href="mailto:lobe1602@student.miun.se" id="contact">Contact
+                    me</a></p>
         </footer>
     </body>
 </html>

@@ -2,7 +2,7 @@
 File Name		: main.css
 Author			: Bernard Che Longho (lobe1602) <lobe1602@student.miun.se>
 Creation date	: 2017-12-26
-Last Modified	: 2017-12-27
+Last Modified	: 2018-01-20
 */
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
@@ -105,16 +105,17 @@ html{
   }
 
 body{
-  position      : relative;
-  background    : #262626 url("../img/dark2.png") repeat;
-  opacity       : 1;
-  border        : 2px inset #fafad2;
-  box-shadow    : -5px 5px 25px black;
-  border-radius : 5px;
-  width         : 600px;
-  margin        : 10px auto;
-  color         : white;
-  font          : normal 10pt/1em arial, Helvetica, sans-serif;
+  position           : relative;
+  background         : #262626 url("../img/dark2.png") repeat;
+  opacity            : 1;
+  border             : 2px inset #fafad2;
+  -webkit-box-shadow : -5px 5px 25px black;
+  box-shadow         : -5px 5px 25px black;
+  border-radius      : 5px;
+  width              : 600px;
+  margin             : 10px auto;
+  color              : white;
+  font               : normal 10pt/1em arial, Helvetica, sans-serif;
   }
 
 /*
@@ -134,29 +135,42 @@ body{
   Let the text make a small big-small change and the text color from blue to
   black
  */
-@keyframes spinTitle{
+@-webkit-keyframes spinTitle{
   0%{
-	transform        : rotateY(0);
-	color            : #000000;
-	background-color : white;
+	-webkit-transform : rotate(0); /* Ch <36, Saf 5.1+, iOS < 9.2, An =<4.4.4 */
+	-ms-transform     : rotate(0); /* IE 9 */
+	transform         : rotate(0); /* IE 10, Fx 16+, Op 12.1+ */
+	color             : #000000;
+	background-color  : white;
 	}
   50%{
 	color            : #ffffff;
 	background-color : #0000ff;
 	}
   100%{
-	transform        : rotateY(30deg);
-	color            : #000000;
-	background-color : white;
+	-webkit-transform : rotateY(30deg);
+	-ms-transform     : rotateY(30deg);
+	transform         : rotateY(30deg);
+	color             : #000000;
+	background-color  : white;
 	}
   }
 
+@-webkit-keyframes blink{
+  50%{ opacity : 0.5; }
+  }
+
+@keyframes blink{
+  50%{ opacity : 0.5; }
+  }
+
 #title{
-  float     : left;
-  margin    : 5px 5px 5px 65px;
-  padding   : 5px;
-  font      : bold 12pt 'MySourceCodePro_bold', sans-serif;
-  animation : spinTitle 20s infinite;
+  float             : left;
+  margin            : 5px 5px 5px 65px;
+  padding           : 5px;
+  font              : bold 12pt 'MySourceCodePro_bold', sans-serif;
+  -webkit-animation : spinTitle 20s infinite;
+  animation         : spinTitle 20s infinite;
   }
 
 /* Style the settings area */
@@ -197,10 +211,17 @@ section, footer, header{
   }
 
 /* Let the test, the user input, statistics and footer section be centered align */
-#test, #user, #statistics, #footer{
-  display        : flex;
-  flex-direction : column;
-  align-items    : center;
+#test, #user, #statistics,#footer{
+  display               : -webkit-box;
+  display               : -ms-flexbox;
+  display               : flex;
+  -webkit-box-orient    : vertical;
+  -webkit-box-direction : normal;
+  -ms-flex-direction    : column;
+  flex-direction        : column;
+  -webkit-box-align     : center;
+  -ms-flex-align        : center;
+  align-items           : center;
   }
 
 /* Style the test section */
@@ -232,6 +253,8 @@ section, footer, header{
   font           : normal 140%/2em Verdana, Geneva, sans-serif;
   letter-spacing : 0.1em;
   text-align     : left;
+  overflow       : auto;
+  height         : auto;
   }
 
 #testTitle, #authorAndStatistics{ text-align : center; }
@@ -277,31 +300,30 @@ section, footer, header{
   }
 
 #contact{
-  color: white;
-  text-decoration: none;
+  color           : white;
+  text-decoration : none;
   }
+
 #contact:hover{
-  color: green;
+  color     : green;
   font-size : 120%;
   }
+
 #contact:active{
   font-size : 140%;
   }
 
-@keyframes blink{
-  50%{ opacity : 0.5; }
-  }
-
 #testInfo{
-  animation        : blink 3s linear 5;
-  display          : none;
-  text-align       : center;
-  margin           : 1em;
-  padding          : 1em;
-  font-size        : 140%;
-  background-color : blue;
-  color            : white;
-  font-weight      : bold;
+  -webkit-animation : blink 3s linear 5;
+  animation         : blink 3s linear 5;
+  display           : none;
+  text-align        : center;
+  margin            : 1em;
+  padding           : 1em;
+  font-size         : 140%;
+  background-color  : blue;
+  color             : white;
+  font-weight       : bold;
   }
 
 #progressGraph{
@@ -318,13 +340,23 @@ section, footer, header{
   body{ max-width : 96% }
 
   #pageHeader, #test, #user, #statistics, #footer, #settings{
-	display       : flex;
-	flex          : 1 auto;
-	margin        : 15px auto;
-	flex-flow     : column wrap;
-	align-content : center;
-	align-items   : center;
-	width         : 90%;
+	display               : -webkit-box;
+	display               : -ms-flexbox;
+	display               : flex;
+	-webkit-box-flex      : 1;
+	-ms-flex              : 1 auto;
+	flex                  : 1 auto;
+	margin                : 15px auto;
+	-webkit-box-orient    : vertical;
+	-webkit-box-direction : normal;
+	-ms-flex-flow         : column wrap;
+	flex-flow             : column wrap;
+	-ms-flex-line-pack    : center;
+	align-content         : center;
+	-webkit-box-align     : center;
+	-ms-flex-align        : center;
+	align-items           : center;
+	width                 : 90%;
 	}
 
   *{ font-size : smaller; }

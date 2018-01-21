@@ -3,77 +3,22 @@
  * @author Bernard Che Longho (lobe1602) lobe1602[at]student.miun.se <br />
  * @desc File with js functions that handle the typing tracking and results
  * display
+ * @since 2018-01-21
  */
-var minutes = 0;
-var startTime = 0;
-var endTime = 0;
+var minutes = 0; // number of minutes passed since last typed character
+var startTime = 0; // time when typing starts (milliseconds)
+var endTime = 0;  // time elapsed after last key stroke
 var typedIndex = 0; // index of currently typed text
 var trackingIndex = typedIndex + 1; // index of test text
-var typedEntries = 0;
-var errorEntries = 0;
-var correctEntries = 0;
-var sec = 0;
-var netWPM = 0;
-
-const maxTime = 300;    // maximum time for the game (5 minutes)
-const alertTime = 5; // Time to display telling the user that test is on
-
-/**
- * End game
- * Disable input area and give it another color
- */
-function endGame() {
-	var actionImage = document.getElementById("action_image");
-	var userText = document.getElementById("userText");
-	userText.placeholder = "";
-	userText.value = "GAME ENDED";
-	userText.style.backgroundColor = "#ff794d";
-	userText.disabled = true;
-	document.getElementById("endSound").play();
-	actionImage.src = actionButtons[2].src;
-	actionImage.alt = actionButtons[2].alt;
-	actionImage.title = actionButtons[2].title;
-	actionImage.style.width = 80;
-}
-
-/**
- * Dynamically update statistics as the user types
- * @param typed Number of entries typed
- * @param correct Number of correct entries typed
- * @param errors Number of mis-match entries typed
- * @param time Time elapsed since typing started.
- */
-
-function drawProgress(speed){
-	var canvas = document.getElementById("progressGraph");
-	var context = canvas.getContext("2d");
-	context.beginPath();
-	var prevPoint = speed;
-	var currPoint = netWPM;
-
-	context.moveTo(0, speed);
-	context.lineTo(sec, speed);
-	context.lineWidth = 1;
-	context.strokeStyle = "yellow";
-
-	context.stroke();
-}
-function updateStatistics(typed, correct, errors, time) {
-	document.getElementById("errors").innerHTML = errors;
-	document.getElementById("accuracy").innerHTML =
-		(correct / tractTest.length * 100).toFixed();
-
-	var gross = (typed / 5) / time;
-	document.getElementById("grossWPM").innerHTML = gross.toFixed();
-
-	netWPM = (gross - (errors / time)).toFixed();
-	document.getElementById("netWPM").innerHTML =netWPM.toString();
-
-	//drawProgress(netWPM);
-
-
-	//console.log("Value of time is " + time*60);
-}
+var typedEntries = 0;  // number of typed characters
+var errorEntries = 0;   // number of wrongly typed characters
+var correctEntries = 0;  // number of correctly typed characters
+var sec = 0; // seconds
+var netWPM = 0; // net word per minute
+var grossWPM = 0;
+var point = {x: 0, y: 0};
+var points = [];
+var maxTime = 300;    // maximum time for the game (5 minutes)
 
 /**
  * Compare two characters. <br/>
@@ -91,6 +36,15 @@ function isSameChar(c1, c2) {
 }
 
 /**
+ * Check that a char is not white space
+ * @param char Character to check
+ * @returns {boolean} -1 if value is not a char. Otherwise, a positive number
+ */
+function isChar(char) {
+	return "\t\n\r ".indexOf(char) < 0;
+}
+
+/**
  * As the user types <br/>
  * The typed char is compared with that of the test text. Consideration is
  * taken<br/> whether the user wants to ignore the case or not by calling
@@ -102,8 +56,8 @@ function isSameChar(c1, c2) {
 function runTest() {
 	var timer = document.getElementById("timer");
 	var userText = document.getElementById("userText");
-	var briefInfo = document.getElementById("testInfo");
 
+	var errorSound = document.getElementById("shout");
 	userText.addEventListener("input", function () {
 		var input = document.getElementById("userText").value;
 
@@ -116,13 +70,13 @@ function runTest() {
 		if (trackingIndex < tractTest.length) {
 			tractTest[trackingIndex].style.backgroundColor = "grey";
 			trackingIndex++;
-
 		}
-		// alertStart();
 
 		// clear input fill when whitespace is encountered
 		if (!isChar(typedChar)) {
 			this.value = "";
+			//this.placeholder = selectedLanguage() == "english"? "Type" +
+			//" here...": "Skriv här..";
 		}
 		if (isSameChar(typedChar, testChar.innerHTML)) {
 			testChar.style.color = "green";
@@ -131,7 +85,8 @@ function runTest() {
 			if (isChar(testChar.innerHTML)) {
 				testChar.style.color = "red";
 			}
-			document.getElementById("shout").play();
+			errorSound.play();
+			errorSound.currentTime = 0; // if not opera will not play again
 			++errorEntries;
 		}
 		endTime = new Date().getTime();
@@ -140,8 +95,13 @@ function runTest() {
 
 		minutes = sec / 60;
 
+		point.x = sec;
+		point.y = netWPM;
+		points.push(point);
+
 		updateStatistics(typedEntries, correctEntries, errorEntries, minutes);
 
+		//drawProgress();
 		timer.innerHTML = "Time elapsed : " + formattedTime(sec);
 
 		++typedIndex;
@@ -149,10 +109,67 @@ function runTest() {
 		if ((typedIndex === tractTest.length) || (sec.toFixed() >= maxTime)) {
 			displayStopReason();
 			endGame();
+			playStopSound();
 		}
 
 	}, false);
 
+}
+
+/**
+ * Dynamically update statistics as the user types
+ * @param typed Number of entries typed
+ * @param correct Number of correct entries typed
+ * @param errors Number of mis-match entries typed
+ * @param time Time elapsed since typing started.
+ */
+function drawProgress() {
+	var c = document.getElementById("progressGraph");
+	var ctx = c.getContext("2d");
+	ctx.strokeStyle = "yellow";
+	ctx.lineWidth = 2;
+	if (points.length > 1) {
+		c.className = "";
+		var from = points[points.length - 2];
+		var to = points[points.length - 1];
+		console.log("From: " + from.x, normalizePoint(from.y));
+		console.log("To: " + to.x, normalizePoint(to.y));
+
+		ctx.beginPath();
+		ctx.moveTo(from.x, normalizePoint(from.y));
+		ctx.lineTo(to.x, normalizePoint(to.y));
+
+		ctx.stroke();
+	}
+}
+
+/**
+ * Set points to be in the range of -100 to 100
+ * @param pt
+ * @returns {number}
+ */
+function normalizePoint(pt) {
+	var p = 0;
+	if (pt > 100) {
+		p = 100;
+	} else if (pt < -100) {
+		p = -100;
+	} else {
+		p = pt;
+	}
+	return p;
+}
+
+function updateStatistics(typed, correct, errors, time) {
+	document.getElementById("errors").innerHTML = errors;
+	document.getElementById("accuracy").innerHTML =
+		(correct / typed * 100).toFixed();
+
+	grossWPM = (typed / 5) / time;
+	document.getElementById("grossWPM").innerHTML = grossWPM.toFixed();
+
+	netWPM = (grossWPM - (errors / time)).toFixed();
+	document.getElementById("netWPM").innerHTML = netWPM.toString();
 }
 
 /**
@@ -161,35 +178,40 @@ function runTest() {
 function resetInput() {
 	var userText = document.getElementById("userText");
 	userText.value = "";
-	if (selectedLanguage().toLowerCase() === "swedish") {
-		userText.placeholder = "Skriv här ...";
-	}
-	else {
-		userText.placeholder = "Type here ...";
-	}
+	userText.placeholder = selectedLanguage() === "english" ?
+		"Type here..." : "Skrive här ...";
 	userText.style.backgroundColor = "white";
 	userText.disabled = false;
 }
 
 /**
- * Print a 5 seconds message informing that timing has started
+ * Display reason why test has stopped <br />
+ * Test stops if: <br/>
+ *  i. The user has spent 5 minutes since s(he) typed the first character
+ *  ii. The number of keystrokes has reached the text length
  */
 function displayStopReason() {
 	var briefInfo = document.getElementById("testInfo");
 	briefInfo.style.display = "block";
+	briefInfo.className = "";
 	if (sec >= maxTime) {
 		if (selectedLanguage() === "english") {
-			briefInfo.innerHTML = "You have exceeded the time limit [5 minutes]";
+			briefInfo.innerHTML =
+				"You have exceeded the time limit [5 minutes]";
 		} else {
-			briefInfo.innerHTML = "Den maximala test tiden är passerade [5 minuter]";
+			briefInfo.innerHTML =
+				"Den maximala test tiden är passerade [5 minuter]";
 		}
 	}
 	else if (typedIndex === tractTest.length) {
 		if (selectedLanguage() === "english") {
 			briefInfo.innerHTML = "You have reached the end of the test text";
 		} else {
-			briefInfo.innerHTML = "Test texten är slut!";
+			briefInfo.innerHTML = "Du nådde text längden!";
 		}
+	} else if (sec < maxTime && typedIndex < tractTest.length) {
+		briefInfo.innerHTML = selectedLanguage() === "english" ?
+			"You chose to end the test" : "Du vald att sluta spelet";
 	}
 }
 
@@ -226,38 +248,65 @@ function resetStatistics() {
 }
 
 /**
- * Check that a char is not white space
- * @param char Character to check
- * @returns {boolean} -1 if value is not a char. Otherwise, a positive number
- */
-function isChar(char) {
-	return "\t\n\r ".indexOf(char) < 0;
-}
-
-/**
- * Start timer: Call this when user starts typing.
- * The method setInterval calls updateTimer() which increments minutes every
- * 1000 milliseconds = 1 second
- */
+ * All events that happen when the user clicks on the input area <br/>
+ * The following occurs<br/>
+ * i. The clock starts ticking
+ * ii. The place holder it cleared
+ * iii. The action button changes from play to stop
+ * */
 function inputEvents() {
 	var userText = document.getElementById("userText");
 
-	userText.addEventListener("click", function () {
-		startTime = sec === 0 ? new Date().getTime() : startTime;
-	}, false);
+	userText.addEventListener("click", startTimer, false);
 
 	userText.addEventListener("click", function () {
 		this.placeholder = "";
 	}, false);
 
-	userText.addEventListener("click", changeActionButton, false);
+	userText.addEventListener("click", function () {
+		var actionImage = document.getElementById("action_image");
+		if (actionButtons.length !== 0) {
+			actionImage.src = actionButtons[1].src;
+			actionImage.alt = actionButtons[1].alt;
+			actionImage.title = actionButtons[1].title;
+		}
+	}, false);
 
 }
 
-function test() {
-	//drawProgress(netWPM);
+/**
+ * Start the timer
+ * If the seconds is still 0, then the timer starts
+ */
+function startTimer() {
+	startTime = sec === 0 ? new Date().getTime() : startTime;
+
+}
+
+/**
+ * The stop sound plays when program terminates
+ */
+function playStopSound() {
+	document.getElementById("endSound").play();
+}
+
+/**
+ * Load all events in this when the page loads.
+ */
+function loadActionListeners() {
+	fillDate();
+	loadTexts();
+	addOptions();
+	loadActionButtons();
+	resetGame();
+	changeTest();
+	languageChangeEvents();
+	resetActionButton();
+	translateInterface();
+	actionButtonEvents();
 	inputEvents();
 	runTest();
+	resetStatistics();
 }
 
-window.addEventListener("load", test, false);
+window.addEventListener("load", loadActionListeners, false);

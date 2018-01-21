@@ -18,6 +18,7 @@ is calculated taking the case of the letters into consideration.
 ## How do I get set up? ###
 
 * The project repository is set-up as follows
+
 - Project 	(main directory)
 	- audio (has audio for the project)
 	- css	( hass all css)
@@ -27,7 +28,7 @@ is calculated taking the case of the letters into consideration.
 	- .gitignore ( the gitignore file for the project)
 	- index.html (the xml page of the program)
 	- texts.xml	(the xml file containing sample texts)
-	- dt146g_lobe1602_projekt.fodt ( the project report)
+	- dt146g_lobe1602_projektReport.fodt ( the project report)
 
 ### Contribution guidelines ###
 This is an individual project so there is no contribution guideline
@@ -44,3 +45,10 @@ feature is done on a branch and later merged with the master branch.
 ## Live testing of the application ##
 
 [![demo](img/liveDemo.png)](http://studenter.miun.se/~lobe1602/projekt/)
+
+NB: Application <b>works best</b> with google chrome and opera. It also works 
+with 
+firefox though with some quirks.  
+Application <b>does not work </b> with internet explorer and safari. It has not 
+been 
+tested with Microsoft edge. 

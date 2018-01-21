@@ -2,7 +2,7 @@
 File Name       : index.html
 Author          : Bernard Che Longho (lobe1602) <lobe1602[at]student.miun.se>
 Creation date   : 2017-12-24
-Last Modified   : 2018-01-05
+Last Modified   : 2018-01-20
 -->
 <!doctype html>
 <html lang="en">
@@ -18,8 +18,9 @@ Last Modified   : 2018-01-05
 
         <title id="headTitle">Measure your typing speed and accuracy</title>
         <link rel="stylesheet" href="css/main.css" type="text/css">
-        <script src="js/main.js" type="text/javascript"></script>
-        <script src="js/testStuff.js" type="text/javascript"></script>
+        <script src="js/main.js"></script>
+        <script src="js/testStuff.js"></script>
+       <!-- <script src="js/quirks.js" type="text/javascript"></script>-->
     </head>
     <body>
         <header id="pageHeader">
@@ -105,7 +106,8 @@ Last Modified   : 2018-01-05
             -->
             <section id="statistics">
                 <h2 class="hide">The statistics section</h2>
-                <canvas id="progressGraph" width="200" height="50"></canvas>
+                <canvas id="progressGraph" width="200" height="100"
+                        class="hide"></canvas>
                 <table id="statsTable">
                     <tr>
                         <td id="gwpm">Gross WPM:</td>
@@ -124,26 +126,28 @@ Last Modified   : 2018-01-05
                     <span id="seconds"></span></p>
             </section>
             <audio id="shout" class="hide" preload="metadata">
-                <source src="audio/keystroke.mp3" type="audio/mpeg">
-                <source src="audio/keystroke.ogg" type="audio/ogg">
-                <source src="audio/keystroke.wav" type="audio/wav">
+                <source src="audio/wrongKey.mp3" type="audio/mpeg">
+                <source src="audio/wrongKey.ogg" type="audio/ogg">
+                <source src="audio/wrongKey.wav" type="audio/wav">
                 A sound was supposed to be played but your browser seem too
-                obsolete for the <code>audio</code> tag
+                obsolete for the <code>audio</code> tag.
             </audio>
             <audio id="endSound" class="hide" preload="metadata">
-                <source src="audio/wrong.mp3" type="audio/mpeg">
-                <source src="audio/wrong.ogg" type="audio/ogg">
-                <source src="audio/wrong.wav" type="audio/wav">
+                <source src="audio/end.mp3" type="audio/mpeg">
+                <source src="audio/end.ogg" type="audio/ogg">
+                <source src="audio/end.wav" type="audio/wav">
                 A sound was supposed to be played but your browser seem too
-                obsolete for the <code>audio</code> tag
+                obsolete for the <code>audio</code> tag.
             </audio>
         </main>
         <footer id="footer">
             <p>Copyright &copy; 2017 - <span id="year"></span> Bernard Che
                 Longho. No
-                rights reserved.</p><p><a
-                    href="mailto:lobe1602@student.miun.se" id="contact">Contact
-                    me</a></p>
+                rights reserved.</p>
+            <p><a
+                href="mailto:lobe1602@student.miun.se?Subject=Word%20Per%20Minute%20enquiry&body=Please%20be%20concise"
+                id="contact">Contact
+                me</a></p>
         </footer>
     </body>
 </html>

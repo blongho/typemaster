@@ -38,54 +38,64 @@ var Test = {
 };
 
 /**
- * Read xml file
+ * Send request for text
+ */
+var xhr;
+
+function getTexts(url) {
+	try {
+		if (window.XMLHttpRequest) {
+			// code for modern browsers
+			xhr = new XMLHttpRequest();
+		} else {
+			// code for old IE browsers
+			xhr = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xhr.addEventListener("readystatechange", processResponse, false);
+		xhr.open("GET", url, true);
+		xhr.send(null);
+	} catch (exception) {
+		alert("Request Failed");
+	}
+}
+
+getTexts("texts.xml");
+
+/**
+ * Process requests for texts
  * texts.xml is parsed and every Test object is read.
  * English texts are stored in the engTexts array and Swedish texts are
  * stored in the sweTexts array
- * thanks to https://www.youtube.com/watch?v=3H0PNRXRUKw
+
  */
-function loadTexts() {
-	var xhr;
+function processResponse() {
+	if (xhr.readyState === 4 && xhr.status === 200 && xhr.responseXML) {
+		var xmlDoc = xhr.responseXML;
 
-	if (window.XMLHttpRequest) {
-		// code for modern browsers
-		xhr = new XMLHttpRequest();
-	} else {
-		// code for old IE browsers
-		xhr = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xhr.onreadystatechange = function () {
-		if (this.readyState === 4 && this.status === 200) {
-			var xmlDoc = xhr.responseXML;
+		var object = xmlDoc.getElementsByTagName("object")[0];
 
-			var object = xmlDoc.getElementsByTagName("object")[0];
+		var titleList = object.getElementsByTagName("title");
+		var authorList = object.getElementsByTagName("author");
+		var texts = object.getElementsByTagName("text");
+		var langList = object.getElementsByTagName("language");
 
-			var titleList = object.getElementsByTagName("title");
-			var authorList = object.getElementsByTagName("author");
-			var texts = object.getElementsByTagName("text");
-			var langList = object.getElementsByTagName("language");
+		for (var i = 0; i < texts.length; i++) {
 
-			for (var i = 0; i < texts.length; i++) {
+			var test = Object.create(Test);
+			test.title = titleList[i].firstChild.nodeValue;
+			test.author = authorList[i].firstChild.nodeValue;
+			test.lang = langList[i].firstChild.nodeValue;
+			test.text = texts[i].firstChild.nodeValue;
 
-				var test = Object.create(Test);
-				test.title = titleList[i].firstChild.data;
-				test.author = authorList[i].firstChild.data;
-				test.lang = langList[i].firstChild.data;
-				test.text = texts[i].firstChild.data;
-
-				test.lang === "english" ? engTexts.push(test) :
-					sweTexts.push(test);
-			}
-			sweTexts.sort(sortByTitle);
-			engTexts.sort(sortByTitle);
+			test.lang === "english" ? engTexts.push(test) :
+				sweTexts.push(test);
 		}
-
-	};
-	xhr.open("GET", "texts.xml", false);
-	xhr.send(null);
-	//console.log(engTexts);
-	//console.log(sweTexts);
+		sweTexts.sort(sortByTitle);
+		engTexts.sort(sortByTitle);
+	}
 }
+
+
 
 /**
  * Sort texts by title
@@ -342,37 +352,4 @@ function endGame() {
 function fillDate() {
 	document.getElementById("year").innerHTML =
 		new Date().getFullYear().toString();
-}
-
-/**
- * Get and return the browser name <br/>
- * NB: After testing, this detects both opera and edge as chrome.
- * @returns {string} the browser name in lower case
- * @copyright
- * https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser/26358856#26358856
- */
-function browserName() {
-	var agent = navigator.userAgent;
-	var browser = "";
-	if ((agent.indexOf("Opera") || agent.indexOf('OPR')) !== -1) {
-		browser = "Opera";
-	}
-	else if (agent.indexOf("Chrome") !== -1) {
-		browser = "Chrome";
-	}
-	else if (agent.indexOf("Safari") !== -1) {
-		browser = "Safari";
-	}
-	else if (agent.indexOf("Firefox") !== -1) {
-		browser = "Firefox";
-	}
-	else if ((agent.indexOf("MSIE") !== -1 ) || (!!agent === true )) //IF IE > 10
-	{
-		browser = "Internet Explorer";
-	}
-	else {
-		browser = "unknown";
-	}
-
-	return browser.toLowerCase();
 }

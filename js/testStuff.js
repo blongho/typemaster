@@ -117,13 +117,10 @@ function runTest() {
 }
 
 /**
- * Dynamically update statistics as the user types
- * @param typed Number of entries typed
- * @param correct Number of correct entries typed
- * @param errors Number of mis-match entries typed
- * @param time Time elapsed since typing started.
+ * Attempt to draw progress bar
  */
-function drawProgress() {
+
+/*function drawProgress() {
 	var c = document.getElementById("progressGraph");
 	var ctx = c.getContext("2d");
 	ctx.strokeStyle = "yellow";
@@ -141,25 +138,35 @@ function drawProgress() {
 
 		ctx.stroke();
 	}
-}
+ }*/
 
 /**
  * Set points to be in the range of -100 to 100
  * @param pt
  * @returns {number}
  */
-function normalizePoint(pt) {
-	var p = 0;
-	if (pt > 100) {
-		p = 100;
-	} else if (pt < -100) {
-		p = -100;
-	} else {
-		p = pt;
-	}
-	return p;
-}
 
+/*
+function normalizePoint(pt) {
+ var p = 0;
+ if (pt > 100) {
+ p = 100;
+ } else if (pt < -100) {
+ p = -100;
+ } else {
+ p = pt;
+ }
+ return p;
+ }
+ */
+
+/**
+ * Dynamically update statistics as the user types
+ * @param typed Number of entries typed
+ * @param correct Number of correct entries typed
+ * @param errors Number of mis-match entries typed
+ * @param time Time elapsed since typing started.
+ */
 function updateStatistics(typed, correct, errors, time) {
 	document.getElementById("errors").innerHTML = errors;
 	document.getElementById("accuracy").innerHTML =
@@ -295,7 +302,6 @@ function playStopSound() {
  */
 function loadActionListeners() {
 	fillDate();
-	loadTexts();
 	addOptions();
 	loadActionButtons();
 	resetGame();

@@ -44,7 +44,7 @@ feature is done on a branch and later merged with the master branch.
 
 ## Live testing of the application ##
 
-[![demo](img/liveDemo.png)](http://studenter.miun.se/~lobe1602/dt146g/projekt/)
+[![demo](img/liveDemo.png)](https://blongho.github.io/typemaster/)
 
 NB: Application **works best** with `google chrome` and `opera`. 
 It also works with `firefox` though with some quirks.  

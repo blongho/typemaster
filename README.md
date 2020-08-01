@@ -1,4 +1,6 @@
-# Project - DT146G #
+# TypeMaster #
+
+## DT146G - Webbprogrammering med HTML5, CSS3 och JavaScript
 
 ### What is this repository for? ###
 
